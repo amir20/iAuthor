@@ -12,7 +12,6 @@ public class TextEditorPane extends JPanel {
     public TextEditorPane() {        
         setLayout(new BorderLayout());
         JScrollPane editorScrollPane = new JScrollPane(createEditorPane());
-        //editorScrollPane.setPreferredSize(new Dimension(800, 600));
         add(editorScrollPane, BorderLayout.CENTER);
     }
 
