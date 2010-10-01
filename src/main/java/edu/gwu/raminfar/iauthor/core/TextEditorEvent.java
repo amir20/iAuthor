@@ -1,4 +1,4 @@
-package edu.gwu.raminfar.iauthor;
+package edu.gwu.raminfar.iauthor.core;
 
 import javax.swing.event.CaretEvent;
 
