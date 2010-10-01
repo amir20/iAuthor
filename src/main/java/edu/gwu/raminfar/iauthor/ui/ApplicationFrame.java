@@ -25,7 +25,7 @@ public class ApplicationFrame extends JFrame {
         addTextEditor();
         addRightRail();
 
-        setSize(new Dimension(800, 600));
+        setSize(new Dimension(960, 700));
         setLocationRelativeTo(null);        
         setVisible(true);
     }
