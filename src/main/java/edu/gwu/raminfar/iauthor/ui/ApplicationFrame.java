@@ -12,11 +12,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Amir Raminfar
  */
 public class ApplicationFrame extends JFrame {
+    private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
     public ApplicationFrame() throws HeadlessException {
         super(Main.APP_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -26,7 +29,7 @@ public class ApplicationFrame extends JFrame {
         addRightRail();
 
         setSize(new Dimension(960, 700));
-        setLocationRelativeTo(null);        
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -59,11 +62,17 @@ public class ApplicationFrame extends JFrame {
             String[] classes = config.getProperty("iauthor.tools").split(" *, *");
             for (String c : classes) {
                 try {
-                    @SuppressWarnings("unchecked")
-                    Class<? extends AbstractTool> clazz = (Class<? extends AbstractTool>) Class.forName(c);
-                    list.add(clazz);
+                    Class<?> clazz = Class.forName(c);
+                    if (AbstractTool.class.isAssignableFrom(clazz)) {
+                        Class<? extends AbstractTool> tool = clazz.asSubclass(AbstractTool.class);
+                        list.add(tool);
+                    }else{
+                        // print error or throw run time exception
+                        logger.log(Level.WARNING, "Class {0} does not extend AbstractTool", clazz.getName());
+                    }
+
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, "Class not found", e);
                     // skipping to next class
                 }
             }
