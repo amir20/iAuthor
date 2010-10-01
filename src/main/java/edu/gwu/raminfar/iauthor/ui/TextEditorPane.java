@@ -1,8 +1,8 @@
-package edu.gwu.raminfar;
+package edu.gwu.raminfar.iauthor.ui;
 
-import edu.gwu.raminfar.iauthor.Sentence;
-import edu.gwu.raminfar.iauthor.TextEditorEvent;
-import edu.gwu.raminfar.iauthor.Word;
+import edu.gwu.raminfar.iauthor.core.Sentence;
+import edu.gwu.raminfar.iauthor.core.TextEditorEvent;
+import edu.gwu.raminfar.iauthor.core.Word;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -21,10 +21,10 @@ public class TextEditorPane extends JPanel implements CaretListener {
 
     public TextEditorPane() {
         setLayout(new BorderLayout());
-        createTextPane();
+        addTextPane();
     }
 
-    public void createTextPane() {
+    public void addTextPane() {
         JScrollPane editorScrollPane = new JScrollPane(textPane);
         add(editorScrollPane, BorderLayout.CENTER);
         textPane.addCaretListener(this);
@@ -33,14 +33,24 @@ public class TextEditorPane extends JPanel implements CaretListener {
 
     public void caretUpdate(CaretEvent e) {
         String text = textPane.getText();
+        int len = text.length();
 
-        int startOfWord = Math.max(text.lastIndexOf(" ", e.getDot()), 0);
-        int endOfWord = Math.max(text.indexOf(" ", e.getDot()), text.length());
-        Word word = new Word(text.substring(startOfWord, endOfWord));
+
+        int startOfWord = Math.max(text.lastIndexOf(" ", Math.max(e.getDot() - 1, 0)), 0);
+        int endOfWord = text.indexOf(" ", e.getDot());
+        if (endOfWord == -1) {
+            endOfWord = len;
+        }
+        Word word = new Word(text.substring(startOfWord, endOfWord).trim().replaceFirst("^.+?\\s", ""));
 
         int startOfSentence = Math.max(text.lastIndexOf(".", e.getDot()), 0);
-        int endOfSentence = Math.max(text.indexOf(".", e.getDot()), text.length());
-        String[] words = text.substring(startOfSentence, endOfSentence).split(" +");
+        int endOfSentence = text.indexOf(".", e.getDot());
+        if (endOfSentence == -1) {
+            endOfSentence = len;
+        } else if (endOfSentence + 1 < len) {
+            ++endOfSentence;
+        }
+        String[] words = text.substring(startOfSentence, endOfSentence).replaceFirst("^\\.", "").trim().split(" +");
 
         List<Word> list = new ArrayList<Word>();
         for (String w : words) {
@@ -51,7 +61,7 @@ public class TextEditorPane extends JPanel implements CaretListener {
 
         TextEditorEvent event = new TextEditorEvent(sentence, word, e);
 
-        System.out.println(sentence);
-        System.out.println(word);
+        System.out.println("sentence = " + sentence);
+        System.out.println("word = " + word);
     }
 }

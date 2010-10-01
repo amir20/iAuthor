@@ -1,5 +1,8 @@
 package edu.gwu.raminfar;
 
+import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
+import edu.gwu.raminfar.iauthor.ui.TextEditorPane;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -22,13 +25,7 @@ public class Main {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                JFrame frame = new JFrame(APP_NAME);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                //Add content to the window.
-                frame.add(new TextEditorPane());
-                //Display the window.
-                frame.setSize(new Dimension(800, 600));
-                frame.setVisible(true);
+                new ApplicationFrame();
             }
         });
 
