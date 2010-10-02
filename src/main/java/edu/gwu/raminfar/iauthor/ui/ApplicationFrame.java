@@ -2,11 +2,11 @@ package edu.gwu.raminfar.iauthor.ui;
 
 import edu.gwu.raminfar.Main;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +20,8 @@ import java.util.logging.Logger;
  */
 public class ApplicationFrame extends JFrame {
     private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
+    private List<AbstractTool> tools = new ArrayList<AbstractTool>();
+
     public ApplicationFrame() throws HeadlessException {
         super(Main.APP_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,21 +36,22 @@ public class ApplicationFrame extends JFrame {
     }
 
     private void addTextEditor() {
-        add(new TextEditorPane(), BorderLayout.CENTER);
+        add(new TextEditorPane(tools), BorderLayout.CENTER);
     }
 
     private void addRightRail() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        List<Class<? extends AbstractTool>> tools = getTools();
-        for (Class<? extends AbstractTool> c : tools) {
+        List<Class<? extends AbstractTool>> classes = getTools();
+        for (Class<? extends AbstractTool> c : classes) {
             try {
                 AbstractTool tool = c.newInstance();
                 panel.add(tool);
+                tools.add(tool);
             } catch (InstantiationException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Initialization Exception", e);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                logger.log(Level.SEVERE, "Illegal Access Exception", e);
             }
         }
         add(panel, BorderLayout.EAST);
@@ -66,7 +69,7 @@ public class ApplicationFrame extends JFrame {
                     if (AbstractTool.class.isAssignableFrom(clazz)) {
                         Class<? extends AbstractTool> tool = clazz.asSubclass(AbstractTool.class);
                         list.add(tool);
-                    }else{
+                    } else {
                         // print error or throw run time exception
                         logger.log(Level.WARNING, "Class {0} does not extend AbstractTool", clazz.getName());
                     }

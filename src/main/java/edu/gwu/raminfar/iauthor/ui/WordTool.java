@@ -10,10 +10,12 @@ import java.awt.Color;
 public class WordTool extends AbstractTool {
 
     public WordTool() {
-        setBackground(Color.red);
+        setBackground(Color.white);
     }
 
     @Override
-    public void onTextEvent(TextEditorEvent event) {
+    public void onTextEvent(TextEditorEvent e) {
+        System.out.println("sentence = " + e.getSentence());
+        System.out.println("word = " + e.getCurrentWord());
     }
 }

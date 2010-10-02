@@ -2,7 +2,7 @@ package edu.gwu.raminfar.iauthor.ui;
 
 import edu.gwu.raminfar.iauthor.core.TextEditorEvent;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import java.awt.Dimension;
 
 /**

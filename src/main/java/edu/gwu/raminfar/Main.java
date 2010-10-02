@@ -1,10 +1,10 @@
 package edu.gwu.raminfar;
 
 import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
-import edu.gwu.raminfar.iauthor.ui.TextEditorPane;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Author: Amir Raminfar
