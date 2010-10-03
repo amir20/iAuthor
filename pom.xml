@@ -8,5 +8,16 @@
     <artifactId>schoolproject</artifactId>
     <version>1.0</version>
 
-    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-wordnet</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+    </dependencies>
 </project>

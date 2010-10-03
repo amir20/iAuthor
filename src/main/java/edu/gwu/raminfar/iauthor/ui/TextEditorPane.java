@@ -44,7 +44,7 @@ public class TextEditorPane extends JPanel implements CaretListener {
         if (endOfWord == -1) {
             endOfWord = len;
         }
-        Word word = new Word(text.substring(startOfWord, endOfWord).trim().replaceFirst("^.+?\\s", ""));
+        Word word = new Word(text.substring(startOfWord, endOfWord).trim().replaceFirst("^.+?\\s", ""), null);
 
         int startOfSentence = Math.max(text.lastIndexOf(".", e.getDot()), 0);
         int endOfSentence = text.indexOf(".", e.getDot());
@@ -57,7 +57,7 @@ public class TextEditorPane extends JPanel implements CaretListener {
 
         List<Word> list = new ArrayList<Word>();
         for (String w : words) {
-            list.add(new Word(w));
+            list.add(new Word(w, null));
         }
 
         Sentence sentence = new Sentence(list);
