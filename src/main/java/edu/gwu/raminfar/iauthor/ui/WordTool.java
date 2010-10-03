@@ -17,7 +17,7 @@ import java.util.logging.Level;
  * @author Amir Raminfar
  */
 public class WordTool extends AbstractTool {
-    private IndexSearcher searcher = null;
+    private final IndexSearcher searcher;
     private final Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
     private final QueryParser parser = new QueryParser(Version.LUCENE_30, "", analyzer);
 
@@ -26,6 +26,7 @@ public class WordTool extends AbstractTool {
             searcher = new IndexSearcher(new NIOFSDirectory(new File(getClass().getResource("/lucene/wordnet/index").getFile())));
         } catch (IOException e) {
             ApplicationFrame.logger.log(Level.SEVERE, "Error while reading indexer data for wordnet", e);
+            throw new RuntimeException(e);
         }
         setBackground(Color.white);
     }
