@@ -19,5 +19,12 @@
             <artifactId>lucene-wordnet</artifactId>
             <version>3.0.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
