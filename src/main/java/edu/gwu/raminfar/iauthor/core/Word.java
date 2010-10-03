@@ -6,7 +6,8 @@ package edu.gwu.raminfar.iauthor.core;
 public class Word implements Comparable<Word>{
 
 
-    public enum Type{NOUN, VERB, ADJECTIVE, ADJECTIVE_SATELLITE, ADVERB}
+    public enum Type{NOUN, PRONOUN, VERB, MODAL, ADJECTIVE, ADJECTIVE_SATELLITE, PARTICLE,
+        ADVERB, CONJUNCTION, NUMBER, PREPOSITION, DETERMINER, TO, UNKNOWN}
     private String word;
     private Type type;
 
@@ -17,7 +18,7 @@ public class Word implements Comparable<Word>{
 
     @Override
     public String toString() {
-        return word;
+        return getText();
     }
 
     public Type getType() {

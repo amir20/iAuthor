@@ -1,11 +1,9 @@
-import opennlp.tools.postag.POSModel;
-import opennlp.tools.postag.POSTagger;
-import opennlp.tools.postag.POSTaggerME;
+import edu.gwu.raminfar.iauthor.core.Sentence;
+import edu.gwu.raminfar.iauthor.core.Word;
+import edu.gwu.raminfar.iauthor.nlp.NlpService;
 import opennlp.tools.sentdetect.SentenceDetector;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
-import opennlp.tools.tokenize.Tokenizer;
-import opennlp.tools.util.Span;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -18,21 +16,17 @@ public class OpenNlp {
 
     @Test
     public void nlp() throws IOException {
-        SentenceModel sentenceModel = new SentenceModel(getClass().getResourceAsStream("/opennlp/models/en-sent.bin"));
-        SentenceDetector sentenceDetector = new SentenceDetectorME(sentenceModel);
 
-        String[] sentences = sentenceDetector.sentDetect("Use the links in the table below to download the pre-trained models for the OpenNLP 1.5 series. The models are language dependent and only perform well if the model language matches the language of the input text. Also make sure the input text is decoded correctly, depending on the input file encoding this can only be done by explicitly specifying the character encoding. See this Java Tutorial section for further details. ");
+
+        String[] sentences = NlpService.detectedSentences("I found a great set of tools for natural language processing. The Java package includes a sentence detector, a tokenizer, a parts-of-speech (POS) tagger, and a treebank parser. It took me a little while to figure out where to start so I thought I'd post my findings here. I'm no linguist and I don't have previous experience with NLP, but hopefully this will help some one get setup with OpenNLP.");
+
 
         for (String s : sentences) {
-            System.out.println(s);
+            Sentence sentence = NlpService.tagSentence(s);
+            for (Word word : sentence) {
+                System.out.printf("%s / %s \n", word.getText(), word.getType());
+            }
         }
-
-        String first = sentences[0];
-
-        POSModel posModel = new POSModel(getClass().getResourceAsStream("/opennlp/models/en-pos-maxent.bin"));
-        POSTagger tagger = new POSTaggerME(posModel);
-
-        System.out.println(tagger.tag(first));
 
 
     }

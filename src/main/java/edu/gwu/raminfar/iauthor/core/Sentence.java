@@ -3,12 +3,13 @@ package edu.gwu.raminfar.iauthor.core;
 import edu.gwu.raminfar.iauthor.Utils;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author Amir Raminfar
  */
-public class Sentence {
+public class Sentence implements Iterable<Word>{
     private List<Word> words;
 
     public Sentence(List<Word> words) {
@@ -35,5 +36,10 @@ public class Sentence {
     @Override
     public int hashCode() {
         return words != null ? words.hashCode() : 0;
+    }
+
+    @Override
+    public Iterator<Word> iterator() {
+        return words.iterator();
     }
 }

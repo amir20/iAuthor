@@ -20,9 +20,9 @@ import java.util.List;
  * Date: Sep 25, 2010
  */
 public class TextEditorPane extends JPanel implements CaretListener {
-    private JTextPane textPane = new JTextPane();
+    private final JTextPane textPane = new JTextPane();
+    private final Collection<AbstractTool> tools;
     private TextEditorEvent lastEvent;
-    private Collection<AbstractTool> tools;
 
     public TextEditorPane(Collection<AbstractTool> tools) {
         setLayout(new BorderLayout());
@@ -39,34 +39,25 @@ public class TextEditorPane extends JPanel implements CaretListener {
     public void caretUpdate(CaretEvent e) {
         String text = textPane.getText();
         int len = text.length();
-        int startOfWord = Math.max(text.lastIndexOf(" ", Math.max(e.getDot() - 1, 0)), 0);
-        int endOfWord = text.indexOf(" ", e.getDot());
-        if (endOfWord == -1) {
-            endOfWord = len;
+        int startOfP = Math.max(text.lastIndexOf("\n", e.getDot()), 0);
+        int endOfP = text.indexOf("\n", e.getDot());
+        if (endOfP == -1) {
+            endOfP = len;
         }
-        Word word = new Word(text.substring(startOfWord, endOfWord).trim().replaceFirst("^.+?\\s", ""), null);
+        String paragraph = text.substring(startOfP, endOfP);
 
-        int startOfSentence = Math.max(text.lastIndexOf(".", e.getDot()), 0);
-        int endOfSentence = text.indexOf(".", e.getDot());
-        if (endOfSentence == -1) {
-            endOfSentence = len;
-        } else if (endOfSentence + 1 < len) {
-            ++endOfSentence;
-        }
-        String[] words = text.substring(startOfSentence, endOfSentence).replaceFirst("^\\.", "").trim().split(" +");
+        int fromStartOfParagraph = e.getDot() - startOfP;
+        
 
-        List<Word> list = new ArrayList<Word>();
-        for (String w : words) {
-            list.add(new Word(w, null));
-        }
+        System.out.println(paragraph);
 
-        Sentence sentence = new Sentence(list);
-        TextEditorEvent event = new TextEditorEvent(sentence, word, e);
-        if (!event.equals(lastEvent)) {
-            for (AbstractTool tool : tools) {
-                tool.onTextEvent(event);
-            }
-            lastEvent = event;
-        }
+//        Sentence sentence = new Sentence(list);
+//        TextEditorEvent event = new TextEditorEvent(sentence, word, e);
+//        if (!event.equals(lastEvent)) {
+//            for (AbstractTool tool : tools) {
+//                tool.onTextEvent(event);
+//            }
+//            lastEvent = event;
+//        }
     }
 }
