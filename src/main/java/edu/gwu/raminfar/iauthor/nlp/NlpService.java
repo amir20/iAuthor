@@ -25,7 +25,7 @@ public final class NlpService {
     private NlpService() {
     }
 
-    final private static POSModel posModel;static {
+    private final static POSModel posModel;static {
         try {
             posModel = new POSModel(NlpService.class.getResourceAsStream("/opennlp/models/en-pos-maxent.bin"));
         } catch (IOException e) {
@@ -34,9 +34,9 @@ public final class NlpService {
         }
     }
 
-    final private static POSTagger tagger = new POSTaggerME(posModel);
+    private final static POSTagger tagger = new POSTaggerME(posModel);
 
-    final private static SentenceModel sentenceModel;static {
+    private final static SentenceModel sentenceModel;static {
         try {
             sentenceModel = new SentenceModel(NlpService.class.getResourceAsStream("/opennlp/models/en-sent.bin"));
         } catch (IOException e) {

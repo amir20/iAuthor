@@ -1,28 +1,43 @@
 package edu.gwu.raminfar.iauthor.ui;
 
-import edu.gwu.raminfar.iauthor.core.Sentence;
 import edu.gwu.raminfar.iauthor.core.TextEditorEvent;
-import edu.gwu.raminfar.iauthor.core.Word;
+import edu.gwu.raminfar.iauthor.nlp.NlpService;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.SwingWorker;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import java.awt.BorderLayout;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 
 /**
  * Author: Amir Raminfar
  * Date: Sep 25, 2010
  */
-public class TextEditorPane extends JPanel implements CaretListener {
+public class TextEditorPane extends JComponent implements CaretListener {
     private final JTextPane textPane = new JTextPane();
     private final Collection<AbstractTool> tools;
     private TextEditorEvent lastEvent;
+    private static boolean ready = false;
+
+    static {
+        new SwingWorker() {
+            @Override
+            protected Object doInBackground() throws Exception {
+                System.out.println("Initializing NLP Services...");
+                NlpService.detectedSentences("");
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                ready = true;
+            }
+        }.execute();
+    }
 
     public TextEditorPane(Collection<AbstractTool> tools) {
         setLayout(new BorderLayout());
@@ -37,20 +52,48 @@ public class TextEditorPane extends JPanel implements CaretListener {
     }
 
     public void caretUpdate(CaretEvent e) {
+        if (!ready) {
+            return;
+        }
+
+        // find paragraph
         String text = textPane.getText();
         int len = text.length();
-        int startOfP = Math.max(text.lastIndexOf("\n", e.getDot()), 0);
-        int endOfP = text.indexOf("\n", e.getDot());
-        if (endOfP == -1) {
-            endOfP = len;
+        if (len > 0) {
+            int startOfP = Math.max(text.lastIndexOf("\n", e.getDot()), 0);
+            int endOfP = text.indexOf("\n", e.getDot());
+            if (endOfP == -1) {
+                endOfP = len;
+            }else {
+                ++endOfP;
+            }
+            String paragraph = text.substring(startOfP, endOfP);
+
+            // compute new index
+            int fromStartOfParagraph = e.getDot() - startOfP;
+            if (paragraph.startsWith("\n")) {
+                paragraph = paragraph.substring(0);
+                ++fromStartOfParagraph;
+            }
+            String[] sentences = NlpService.detectedSentences(paragraph);
+
+            // find current sentence
+            String sentence = null;
+            if (sentences.length > 0) {
+                int l = 0;
+                // todo optimize?
+                for (String s : sentences) {
+                    sentence = s;
+                    l += sentence.length();
+                    if (fromStartOfParagraph < l) {
+                        break;
+                    }
+                }
+            }
+
+            int fromStartOfSentence = fromStartOfParagraph - paragraph.indexOf(sentence);
+            System.out.println("fromStartOfSentence = " + fromStartOfSentence);
         }
-        String paragraph = text.substring(startOfP, endOfP);
-
-        int fromStartOfParagraph = e.getDot() - startOfP;
-        
-
-        System.out.println(paragraph);
-
 //        Sentence sentence = new Sentence(list);
 //        TextEditorEvent event = new TextEditorEvent(sentence, word, e);
 //        if (!event.equals(lastEvent)) {
@@ -60,4 +103,6 @@ public class TextEditorPane extends JPanel implements CaretListener {
 //            lastEvent = event;
 //        }
     }
+
+
 }
