@@ -3,7 +3,9 @@ package edu.gwu.raminfar.iauthor.core;
 /**
  * @author Amir Raminfar
  */
-public class Word {
+public class Word implements Comparable<Word>{
+
+
     public enum Type{NOUN, VERB, ADJECTIVE, ADJECTIVE_SATELLITE, ADVERB}
     private String word;
     private Type type;
@@ -39,5 +41,10 @@ public class Word {
         int result = word != null ? word.hashCode() : 0;
         result = 31 * result + (type != null ? type.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public int compareTo(Word o) {
+        return word.compareTo(o.word);
     }
 }
