@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * @author Amir Raminfar
  */
 public class ApplicationFrame extends JFrame {
-    private static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
+    public static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
     private List<AbstractTool> tools = new ArrayList<AbstractTool>();
 
     public ApplicationFrame() throws HeadlessException {

@@ -28,6 +28,5 @@ public class Main {
                 new ApplicationFrame();
             }
         });
-
     }
 }

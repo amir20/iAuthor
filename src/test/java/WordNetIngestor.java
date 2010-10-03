@@ -4,6 +4,12 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
@@ -25,8 +31,6 @@ public class WordNetIngestor {
     public void ingestToLucene() throws IOException {
         Map<Word, List<Long>> wordToId = new HashMap<Word, List<Long>>();
         Map<Long, List<Word>> idToWord = new HashMap<Long, List<Word>>();
-
-
         BufferedReader reader = new BufferedReader(new FileReader(getClass().getResource("/wordnet/wn_s.pl").getFile()));
         try {
             Scanner scanner = new Scanner(reader);
@@ -71,7 +75,7 @@ public class WordNetIngestor {
             for (Long id : ids) {
                 synonyms.addAll(idToWord.get(id));
             }
-
+            synonyms.remove(word); // remove self
             Document document = new Document();
             document.add(new Field("word", word.toString(), Field.Store.YES, Field.Index.ANALYZED));
             document.add(new Field("type", word.getType().toString(), Field.Store.YES, Field.Index.ANALYZED));
@@ -87,6 +91,23 @@ public class WordNetIngestor {
         writer.optimize();
         writer.close();
         System.out.println("Saved index to " + index);
+    }
+
+    @Test
+    public void testLucene() throws IOException, ParseException {
+        IndexSearcher searcher = new IndexSearcher(new NIOFSDirectory(new File(getClass().getResource("/lucene/wordnet/index").getFile())));
+        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
+        QueryParser parser = new QueryParser(Version.LUCENE_30, "", analyzer);
+        Query query = parser.parse("word:'wager' AND type:NOUN");
+
+        TopDocs docs = searcher.search(query, 10);
+        for (ScoreDoc doc : docs.scoreDocs) {
+            Document document = searcher.doc(doc.doc);
+            String[] syns = document.getValues("synonym");
+            for (String s : syns) {
+                System.out.println(s);
+            }
+        }
     }
 
     private static Word.Type parseType(String t) {
