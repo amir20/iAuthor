@@ -85,7 +85,7 @@ public class TextEditorPane extends JComponent implements CaretListener {
                 for (String s : sentences) {
                     sentence = s;
                     l += sentence.length();
-                    if (fromStartOfParagraph < l) {
+                    if (fromStartOfParagraph <= l) {
                         break;
                     }
                 }
