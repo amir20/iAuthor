@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,19 +21,21 @@ import java.util.logging.Logger;
  */
 public class ApplicationFrame extends JFrame {
     public static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
-    private List<AbstractTool> tools = new ArrayList<AbstractTool>();
+    private final List<AbstractTool> tools = new ArrayList<AbstractTool>();
 
     public ApplicationFrame() throws HeadlessException {
         super(Main.APP_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-
         addTextEditor();
         addRightRail();
 
-        setSize(new Dimension(960, 700));
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+
+        setSize(new Dimension((int) (d.width * .75), (int) (d.height * .75)));
         setLocationRelativeTo(null);
         setVisible(true);
+
     }
 
     private void addTextEditor() {
@@ -40,27 +43,31 @@ public class ApplicationFrame extends JFrame {
     }
 
     private void addRightRail() {
-        JPanel panel = new JPanel();
+        final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        add(panel, BorderLayout.EAST);
+
         List<Class<? extends AbstractTool>> classes = getTools();
+
         for (Class<? extends AbstractTool> c : classes) {
             try {
+                //long start = System.currentTimeMillis();
                 AbstractTool tool = c.newInstance();
                 panel.add(tool);
                 tools.add(tool);
+                //System.out.println((System.currentTimeMillis() - start) + "ms");
             } catch (InstantiationException e) {
                 logger.log(Level.SEVERE, "Initialization Exception", e);
             } catch (IllegalAccessException e) {
                 logger.log(Level.SEVERE, "Illegal Access Exception", e);
             }
         }
-        add(panel, BorderLayout.EAST);
     }
 
-    private List<Class<? extends AbstractTool>> getTools() {
+    private static List<Class<? extends AbstractTool>> getTools() {
         try {
             Properties config = new Properties();
-            config.load(getClass().getResourceAsStream("/config.properties"));
+            config.load(ApplicationFrame.class.getResourceAsStream("/config.properties"));
             List<Class<? extends AbstractTool>> list = new ArrayList<Class<? extends AbstractTool>>();
             String[] classes = config.getProperty("iauthor.tools").split(" *, *");
             for (String c : classes) {
