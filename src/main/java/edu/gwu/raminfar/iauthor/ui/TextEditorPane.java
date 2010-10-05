@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -18,7 +19,7 @@ import java.util.Collection;
  */
 public class TextEditorPane extends JComponent implements CaretListener {
     private final JTextPane textPane = new JTextPane();
-    private final Collection<AbstractTool> tools;
+    private Collection<AbstractTool> tools;
     private TextEditorEvent lastEvent;
     private static boolean ready = false;
 
@@ -39,16 +40,19 @@ public class TextEditorPane extends JComponent implements CaretListener {
         }.execute();
     }
 
-    public TextEditorPane(Collection<AbstractTool> tools) {
+    public TextEditorPane() {
         setLayout(new BorderLayout());
-        addTextPane();
-        this.tools = tools;
-    }
-
-    public void addTextPane() {
         JScrollPane editorScrollPane = new JScrollPane(textPane);
         add(editorScrollPane, BorderLayout.CENTER);
         textPane.addCaretListener(this);
+    }
+
+    public void setTools(Collection<AbstractTool> tools) {
+        this.tools = new ArrayList<AbstractTool>(tools);
+    }
+
+    public JTextPane getTextPane() {
+        return textPane;
     }
 
     public void caretUpdate(CaretEvent e) {
@@ -87,7 +91,7 @@ public class TextEditorPane extends JComponent implements CaretListener {
 
                     // find the current word
                     Word currentWord = findCurrentWord(fromStartOfSentence, sentence);
-                    event = new TextEditorEvent(sentence, currentWord, e);
+                    event = new TextEditorEvent(sentence, currentWord);
                 }
 
 

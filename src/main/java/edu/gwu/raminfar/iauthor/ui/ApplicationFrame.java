@@ -21,25 +21,19 @@ import java.util.logging.Logger;
  */
 public class ApplicationFrame extends JFrame {
     public static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
-    private final List<AbstractTool> tools = new ArrayList<AbstractTool>();
+    private final TextEditorPane editor = new TextEditorPane();
 
     public ApplicationFrame() throws HeadlessException {
         super(Main.APP_NAME);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        addTextEditor();
+        add(editor, BorderLayout.CENTER);
         addRightRail();
 
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-
         setSize(new Dimension((int) (d.width * .75), (int) (d.height * .75)));
         setLocationRelativeTo(null);
         setVisible(true);
-
-    }
-
-    private void addTextEditor() {
-        add(new TextEditorPane(tools), BorderLayout.CENTER);
     }
 
     private void addRightRail() {
@@ -48,20 +42,21 @@ public class ApplicationFrame extends JFrame {
         add(panel, BorderLayout.EAST);
 
         List<Class<? extends AbstractTool>> classes = getTools();
+        List<AbstractTool> tools = new ArrayList<AbstractTool>();
 
         for (Class<? extends AbstractTool> c : classes) {
             try {
-                //long start = System.currentTimeMillis();
                 AbstractTool tool = c.newInstance();
                 panel.add(tool);
                 tools.add(tool);
-                //System.out.println((System.currentTimeMillis() - start) + "ms");
+                tool.setTextPane(editor.getTextPane());
             } catch (InstantiationException e) {
                 logger.log(Level.SEVERE, "Initialization Exception", e);
             } catch (IllegalAccessException e) {
                 logger.log(Level.SEVERE, "Illegal Access Exception", e);
             }
         }
+        editor.setTools(tools);        
     }
 
     private static List<Class<? extends AbstractTool>> getTools() {
