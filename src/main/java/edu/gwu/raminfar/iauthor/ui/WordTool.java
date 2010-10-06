@@ -15,7 +15,6 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 
 import javax.swing.*;
-import javax.swing.text.Caret;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -30,11 +29,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * @author Amir Raminfar
  */
-public class WordTool extends AbstractTool implements MouseListener{
+public class WordTool extends AbstractTool implements MouseListener {
     private final IndexSearcher searcher;
     private final Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
     private final QueryParser parser = new QueryParser(Version.LUCENE_30, "", analyzer);
@@ -57,12 +57,17 @@ public class WordTool extends AbstractTool implements MouseListener{
     public List<String> findSynonyms(Word word) {
         List<String> synonyms = Collections.emptyList();
         try {
-            Query query = parser.parse(String.format("word:%s AND type:%s", word.getText(), word.getType().toString()));
+            String text = QueryParser.escape(word.getText());
+            String q = String.format("word:%s AND type:%s", text, word.getType().toString());
+            Query query = parser.parse(q);
+            ApplicationFrame.logger.info(q);
             TopDocs docs = searcher.search(query, 1);
             if (docs.scoreDocs.length == 1) {
                 Document document = searcher.doc(docs.scoreDocs[0].doc);
                 String[] words = document.getValues("synonym");
                 synonyms = Arrays.asList(words);
+            } else if (word.getType() == Word.Type.UNKNOWN) {
+                return findSynonyms(new Word(word.getText(), Word.Type.NOUN));
             }
         } catch (ParseException e) {
             ApplicationFrame.logger.log(Level.WARNING, "Error reading solr data for synonyms", e);
@@ -102,7 +107,7 @@ public class WordTool extends AbstractTool implements MouseListener{
                 gd.setColor(new Color(51, 51, 51));
                 FontMetrics metrics = gd.getFontMetrics();
                 for (int i = 0, synonymsSize = synonyms.size(), h = metrics.getHeight(); i < synonymsSize; i++) {
-                    String s = synonyms.get(i);                    
+                    String s = synonyms.get(i);
                     gd.drawString(s, 20, 40 + i * h);
                 }
             }
@@ -125,7 +130,10 @@ public class WordTool extends AbstractTool implements MouseListener{
     public void mouseEntered(MouseEvent e) {
         String text = textPane.getText();
         int start = text.lastIndexOf(" ", textPane.getCaret().getDot()) + 1;
-        int end = text.indexOf(" ", textPane.getCaret().getDot());
+        int end = text.indexOf(" ", textPane.getCaret().getDot() + 1);
+        if (end == -1) {
+            end = text.length();
+        }
         lastDot = textPane.getCaret().getDot();
         textPane.getCaret().setSelectionVisible(false);
         textPane.getCaret().setDot(start);
