@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -38,6 +39,7 @@ public class WordTool extends AbstractTool implements MouseListener {
     private final IndexSearcher searcher;
     private final Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
     private final QueryParser parser = new QueryParser(Version.LUCENE_30, "", analyzer);
+    private final Pattern endings = Pattern.compile(".+(ing|s|ed)[;?!,.'\"()]?$");
 
     private TextEditorEvent event;
     private JTextPane textPane;
@@ -58,7 +60,12 @@ public class WordTool extends AbstractTool implements MouseListener {
         List<String> synonyms = Collections.emptyList();
         try {
             String text = QueryParser.escape(word.getText());
-            String q = String.format("word:%s AND type:%s", text, word.getType().toString());
+            StringBuilder sb = new StringBuilder("word:");
+            sb.append(text);
+            if (word.getType() != Word.Type.UNKNOWN) {
+                sb.append(" AND type:").append(word.getType().toString());
+            }
+            String q = sb.toString();
             Query query = parser.parse(q);
             ApplicationFrame.logger.info(q);
             TopDocs docs = searcher.search(query, 1);
@@ -66,8 +73,11 @@ public class WordTool extends AbstractTool implements MouseListener {
                 Document document = searcher.doc(docs.scoreDocs[0].doc);
                 String[] words = document.getValues("synonym");
                 synonyms = Arrays.asList(words);
-            } else if (word.getType() == Word.Type.UNKNOWN) {
-                return findSynonyms(new Word(word.getText(), Word.Type.NOUN));
+            } else {
+                Matcher matcher = endings.matcher(word.getText());
+                if (matcher.find()) {
+                    return findSynonyms(new Word(word.getText().replaceFirst(matcher.group(1), ""), word.getType()));
+                }
             }
         } catch (ParseException e) {
             ApplicationFrame.logger.log(Level.WARNING, "Error reading solr data for synonyms", e);
@@ -108,7 +118,7 @@ public class WordTool extends AbstractTool implements MouseListener {
                 FontMetrics metrics = gd.getFontMetrics();
                 for (int i = 0, synonymsSize = synonyms.size(), h = metrics.getHeight(); i < synonymsSize; i++) {
                     String s = synonyms.get(i);
-                    gd.drawString(s, 20, 40 + i * h);
+                    gd.drawString(s, 20, 30 + i * h);
                 }
             }
         }
