@@ -1,0 +1,130 @@
+package edu.gwu.raminfar.animation;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * @author Amir Raminfar
+ */
+public class Animator {
+    final private JComponent component;
+    final private List<Animation> queue = new ArrayList<Animation>();
+
+    private Timer timer = new Timer(20, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            for (Iterator<Animation> iterator = queue.iterator(); iterator.hasNext();) {
+                Animation animation = iterator.next();
+                if (animation.isEnded()) {
+                    iterator.remove();
+                } else {
+                    transform(animation);
+                }
+            }
+
+            if (queue.isEmpty()) {
+                timer.stop();
+            }
+
+            component.repaint();
+        }
+    });
+
+    public Animator(JComponent component) {
+        this.component = component;
+    }
+
+    protected void transform(Animation a) {
+        long time = System.currentTimeMillis() - a.start;
+        if (a.movingRange != null) {
+            double tx = a.easing.ease(time, a.movingRange.from.getX(), a.movingRange.to.getX() - a.movingRange.from.getX(), a.duration);
+            double ty = a.easing.ease(time, a.movingRange.from.getY(), a.movingRange.to.getY() - a.movingRange.from.getY(), a.duration);            
+            AffineTransform transform = new AffineTransform();
+            transform.setToTranslation(tx - a.wrapper.shape.getBounds().getLocation().getX(), ty - a.wrapper.shape.getBounds().getLocation().getY());
+            a.wrapper.shape = transform.createTransformedShape(a.wrapper.shape);
+        }
+
+        if (a.rotatingRange != null) {
+            double theta = a.easing.ease(time, a.rotatingRange.from, a.rotatingRange.to - a.rotatingRange.from, a.duration);
+            AffineTransform transform = new AffineTransform();
+            transform.setToRotation(theta);
+            a.wrapper.shape = transform.createTransformedShape(a.wrapper.shape);
+        }
+    }
+
+    protected void addToQueue(Animation animation) {
+        if (!timer.isRunning()) {
+            timer.start();
+        }
+        queue.add(animation);
+    }
+
+
+    public class Animation {
+        protected final ShapeWrapper wrapper;
+
+        // defaults
+        protected long start;
+        protected long duration = 1000L;
+        protected Easing easing = Easing.Linear;
+
+
+        protected Range<Point2D> movingRange;
+        protected Range<Double> rotatingRange;
+        protected Range<Double> scaleRange;
+
+        public Animation(ShapeWrapper wrapper) {
+            this.wrapper = wrapper;
+        }
+
+        public Animation setDuration(long duration) {
+            this.duration = duration;
+            return this;
+        }
+
+        public Animation setEasing(Easing easing) {
+            this.easing = easing;
+            return this;
+        }
+
+        public Animation rotate(double from, double to) {
+            rotatingRange = new Range<Double>(from, to);
+            return this;
+        }
+
+        public Animation move(Point2D from, Point2D to) {
+            movingRange = new Range<Point2D>(from, to);
+            return this;
+        }
+
+        public Animation scale(double from, double to) {
+            scaleRange = new Range<Double>(from, to);
+            return this;
+        }
+
+        public boolean isEnded() {
+            return start + duration < System.currentTimeMillis();
+        }
+
+        public void animate() {
+            start = System.currentTimeMillis();
+            addToQueue(this);
+        }
+    }
+
+    private class Range<E> {
+        E from;
+        E to;
+
+        private Range(E from, E to) {
+            this.from = from;
+            this.to = to;
+        }
+    }
+}

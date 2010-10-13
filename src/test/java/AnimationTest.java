@@ -1,10 +1,17 @@
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import edu.gwu.raminfar.animation.Animator;
+import edu.gwu.raminfar.animation.Easing;
+import edu.gwu.raminfar.animation.ShapeWrapper;
+
+import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
+import java.util.*;
 
 /**
  * Author: Amir Raminfar
@@ -12,36 +19,37 @@ import java.awt.geom.RoundRectangle2D;
  */
 public class AnimationTest extends JPanel {
 
+    ShapeWrapper wrapper = new ShapeWrapper(new RoundRectangle2D.Double(10, 200, 50, 50, 8, 8));
+    Animator animator = new Animator(this);
 
-    Timer timer = new Timer(20, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            rectangle.setRoundRect(rectangle.getX() + 5, rectangle.getY() + 5, rectangle.getWidth(), rectangle.getHeight(), rectangle.getArcWidth(), rectangle.getArcHeight());
-            repaint();
-        }
-    });
-
-    RoundRectangle2D.Double rectangle = new RoundRectangle2D.Double(10, 10, 200, 180, 3, 3);
     public AnimationTest() {
-        timer.setInitialDelay(1000);
-        timer.start();
         setBackground(Color.white);
+        java.util.Timer timer = new java.util.Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Starting animation...");                
+                animator.new Animation(wrapper).setEasing(Easing.OutElastic).move(wrapper.getShape().getBounds().getLocation(), new Point(400, 200)).animate();
+            }
+        }, 1000);
+
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D gd = (Graphics2D) g;
+        Graphics2D gd = (Graphics2D) g.create();
         gd.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         gd.setColor(Color.blue);
-        gd.fill(rectangle);
+        gd.fill(wrapper.getShape());
+        gd.dispose();
     }
 
     public static void main(String... args) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new AnimationTest());
-        frame.setSize(new Dimension(800, 600));
+        frame.setSize(new Dimension(1024, 900));
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
