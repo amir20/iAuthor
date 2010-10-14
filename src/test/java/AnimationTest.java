@@ -9,9 +9,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
-import java.util.*;
+import java.util.TimerTask;
 
 /**
  * Author: Amir Raminfar
@@ -28,8 +27,8 @@ public class AnimationTest extends JPanel {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("Starting animation...");                
-                animator.new Animation(wrapper).setEasing(Easing.OutElastic).move(wrapper.getShape().getBounds().getLocation(), new Point(400, 200)).animate();
+                System.out.println("Starting animation...");
+                animator.newAnimation(wrapper).setEasing(Easing.OutElastic).moveTo(new Point(400, 200)).animate();
             }
         }, 1000);
 

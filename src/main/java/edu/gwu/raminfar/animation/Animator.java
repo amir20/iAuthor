@@ -1,6 +1,7 @@
 package edu.gwu.raminfar.animation;
 
 import javax.swing.*;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
@@ -65,6 +66,10 @@ public class Animator {
         queue.add(animation);
     }
 
+    public Animation newAnimation(ShapeWrapper wrapper) {
+        return this.new Animation(wrapper);
+    }
+
 
     public class Animation {
         protected final ShapeWrapper wrapper;
@@ -75,7 +80,7 @@ public class Animator {
         protected Easing easing = Easing.Linear;
 
 
-        protected Range<Point2D> movingRange;
+        protected Range<Point> movingRange;
         protected Range<Double> rotatingRange;
         protected Range<Double> scaleRange;
 
@@ -98,9 +103,13 @@ public class Animator {
             return this;
         }
 
-        public Animation move(Point2D from, Point2D to) {
-            movingRange = new Range<Point2D>(from, to);
+        public Animation move(Point from, Point to) {
+            movingRange = new Range<Point>(from, to);
             return this;
+        }
+
+        public Animation moveTo(Point to) {
+            return move(wrapper.shape.getBounds().getLocation(), to);
         }
 
         public Animation scale(double from, double to) {
