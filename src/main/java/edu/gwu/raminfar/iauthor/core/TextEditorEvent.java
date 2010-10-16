@@ -9,7 +9,7 @@ public class TextEditorEvent {
 
     public TextEditorEvent(Sentence sentence, Word currentWord) {
         this.sentence = sentence;
-        this.currentWord = currentWord;        
+        this.currentWord = currentWord;
     }
 
     public Sentence getSentence() {

@@ -2,9 +2,7 @@ package edu.gwu.raminfar.iauthor.ui;
 
 import edu.gwu.raminfar.Main;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
@@ -56,7 +54,7 @@ public class ApplicationFrame extends JFrame {
                 logger.log(Level.SEVERE, "Illegal Access Exception", e);
             }
         }
-        editor.setTools(tools);        
+        editor.setTools(tools);
     }
 
     private static List<Class<? extends AbstractTool>> getTools() {

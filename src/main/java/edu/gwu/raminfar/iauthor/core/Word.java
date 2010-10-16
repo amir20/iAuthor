@@ -1,18 +1,22 @@
 package edu.gwu.raminfar.iauthor.core;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Amir Raminfar
  */
-public class Word implements Comparable<Word>{
+public class Word implements Comparable<Word> {
+    private static Pattern NON_ALPHA = Pattern.compile("[^a-z\\- ]");
+    public enum Type {
+        NOUN, PRONOUN, VERB, MODAL, ADJECTIVE, ADJECTIVE_SATELLITE, PARTICLE,
+        ADVERB, CONJUNCTION, NUMBER, PREPOSITION, DETERMINER, TO, UNKNOWN
+    }
 
-
-    public enum Type{NOUN, PRONOUN, VERB, MODAL, ADJECTIVE, ADJECTIVE_SATELLITE, PARTICLE,
-        ADVERB, CONJUNCTION, NUMBER, PREPOSITION, DETERMINER, TO, UNKNOWN}
     private String word;
     private Type type;
 
     public Word(String word, Type type) {
-        this.word = word;
+        this.word = NON_ALPHA.matcher(word.toLowerCase()).replaceAll("");        
         this.type = type;
     }
 

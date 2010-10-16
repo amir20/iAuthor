@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,17 +44,17 @@ public class Animator {
         long time = System.currentTimeMillis() - a.start;
         if (a.movingRange != null) {
             double tx = a.easing.ease(time, a.movingRange.from.getX(), a.movingRange.to.getX() - a.movingRange.from.getX(), a.duration);
-            double ty = a.easing.ease(time, a.movingRange.from.getY(), a.movingRange.to.getY() - a.movingRange.from.getY(), a.duration);            
+            double ty = a.easing.ease(time, a.movingRange.from.getY(), a.movingRange.to.getY() - a.movingRange.from.getY(), a.duration);
             AffineTransform transform = new AffineTransform();
-            transform.setToTranslation(tx - a.wrapper.shape.getBounds().getLocation().getX(), ty - a.wrapper.shape.getBounds().getLocation().getY());
-            a.wrapper.shape = transform.createTransformedShape(a.wrapper.shape);
+            transform.setToTranslation(tx - a.wrapper.getShape().getBounds().getLocation().getX(), ty - a.wrapper.getShape().getBounds().getLocation().getY());
+            a.wrapper.setShape(transform.createTransformedShape(a.wrapper.getShape()));
         }
 
         if (a.rotatingRange != null) {
             double theta = a.easing.ease(time, a.rotatingRange.from, a.rotatingRange.to - a.rotatingRange.from, a.duration);
             AffineTransform transform = new AffineTransform();
             transform.setToRotation(theta);
-            a.wrapper.shape = transform.createTransformedShape(a.wrapper.shape);
+            a.wrapper.setShape(transform.createTransformedShape(a.wrapper.getShape()));
         }
     }
 
@@ -77,7 +76,7 @@ public class Animator {
         // defaults
         protected long start;
         protected long duration = 1000L;
-        protected Easing easing = Easing.Linear;
+        protected Easing easing = Easing.OutQuintic;
 
 
         protected Range<Point> movingRange;
@@ -109,7 +108,7 @@ public class Animator {
         }
 
         public Animation moveTo(Point to) {
-            return move(wrapper.shape.getBounds().getLocation(), to);
+            return move(wrapper.getShape().getBounds().getLocation(), to);
         }
 
         public Animation scale(double from, double to) {

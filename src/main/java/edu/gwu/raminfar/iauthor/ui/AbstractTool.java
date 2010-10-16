@@ -16,7 +16,7 @@ public abstract class AbstractTool extends JPanel {
         setMaximumSize(SIZE);
     }
 
-    abstract void onTextEvent(TextEditorEvent event);
+    public abstract void onTextEvent(TextEditorEvent event);
 
-    abstract void setTextPane(JTextPane pane);
+    public abstract void setTextPane(JTextPane pane);
 }

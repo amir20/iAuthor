@@ -28,7 +28,7 @@ public class AnimationTest extends JPanel {
             @Override
             public void run() {
                 System.out.println("Starting animation...");
-                animator.newAnimation(wrapper).setEasing(Easing.OutElastic).moveTo(new Point(400, 200)).animate();
+                animator.newAnimation(wrapper).setEasing(Easing.OutQuintic).moveTo(new Point(400, 200)).animate();
             }
         }, 1000);
 

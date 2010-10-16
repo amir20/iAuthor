@@ -6,7 +6,7 @@ import java.awt.Shape;
  * @author Amir Raminfar
  */
 public class ShapeWrapper {
-    protected Shape shape;
+    private Shape shape;
 
     public ShapeWrapper(Shape shape) {
         this.shape = shape;
@@ -14,5 +14,9 @@ public class ShapeWrapper {
 
     public Shape getShape() {
         return shape;
+    }
+
+    protected void setShape(Shape shape) {
+        this.shape = shape;
     }
 }

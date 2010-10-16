@@ -2,9 +2,7 @@ package edu.gwu.raminfar;
 
 import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
 
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 
 /**
  * Author: Amir Raminfar

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Amir Raminfar
  */
-public class Sentence implements Iterable<Word>{
+public class Sentence implements Iterable<Word> {
     private List<Word> words;
 
     public Sentence(List<Word> words) {
