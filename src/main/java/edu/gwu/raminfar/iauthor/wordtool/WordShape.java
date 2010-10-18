@@ -29,10 +29,10 @@ public class WordShape {
     public void paint(Graphics g) {
         Graphics2D gd = (Graphics2D) g.create();
 
-        gd.setColor(Color.darkGray);
-        gd.draw(wrapper.getShape());
         gd.setColor(Color.white);
         gd.fill(wrapper.getShape());
+        gd.setColor(Color.darkGray);
+        gd.draw(wrapper.getShape());
         int x = (int) wrapper.getShape().getBounds().getX();
         int y = (int) (wrapper.getShape().getBounds().getY() + wrapper.getShape().getBounds().getHeight());
         gd.setColor(Color.darkGray);
