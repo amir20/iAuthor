@@ -12,7 +12,7 @@ import java.io.IOException;
  * Author: Amir Raminfar
  * Date: Oct 3, 2010
  */
-public class OpenNlp {
+public class OpenNlpTest {
 
     @Test
     public void nlp() throws IOException {

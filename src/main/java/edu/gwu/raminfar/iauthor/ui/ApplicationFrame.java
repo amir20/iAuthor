@@ -2,7 +2,9 @@ package edu.gwu.raminfar.iauthor.ui;
 
 import edu.gwu.raminfar.Main;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;

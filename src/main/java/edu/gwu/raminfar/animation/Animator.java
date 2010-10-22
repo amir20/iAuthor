@@ -1,6 +1,7 @@
 package edu.gwu.raminfar.animation;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.Timer;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

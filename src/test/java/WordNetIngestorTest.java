@@ -25,7 +25,7 @@ import java.util.*;
  * Author: Amir Raminfar
  * Date: Oct 2, 2010
  */
-public class WordNetIngestor {
+public class WordNetIngestorTest {
 
     @Test
     public void ingestToLucene() throws IOException {

@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
  */
 public class Word implements Comparable<Word> {
     private static Pattern NON_ALPHA = Pattern.compile("[^a-z\\- ]");
+
     public enum Type {
         NOUN, PRONOUN, VERB, MODAL, ADJECTIVE, ADJECTIVE_SATELLITE, PARTICLE,
         ADVERB, CONJUNCTION, NUMBER, PREPOSITION, DETERMINER, TO, UNKNOWN
@@ -16,7 +17,7 @@ public class Word implements Comparable<Word> {
     private Type type;
 
     public Word(String word, Type type) {
-        this.word = NON_ALPHA.matcher(word.toLowerCase()).replaceAll("");        
+        this.word = NON_ALPHA.matcher(word.toLowerCase()).replaceAll("");
         this.type = type;
     }
 
