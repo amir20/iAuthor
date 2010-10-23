@@ -1,9 +1,10 @@
-import edu.gwu.raminfar.wikicrawler.WikiPage;
-import edu.gwu.raminfar.wikicrawler.WikiSearch;
+import edu.gwu.raminfar.iauthor.Utils;
+import edu.gwu.raminfar.iauthor.nlp.NlpService;
+import edu.gwu.raminfar.wiki.WikiPage;
+import edu.gwu.raminfar.wiki.WikiSearch;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 /**
  * Author: Amir Raminfar
@@ -17,5 +18,12 @@ public class WikiSearchTest {
         for (WikiPage page : search.parseResults()) {
             System.out.println(page.getUrl() + ": " + page.content());
         }
+    }
+
+    @Test
+    public void computerScience() throws IOException {
+        WikiSearch search = new WikiSearch("Computer Science");
+        WikiPage first = search.parseResults().iterator().next();
+        System.out.println(Utils.join(NlpService.detectedSentences(first.content()), "\n"));
     }
 }

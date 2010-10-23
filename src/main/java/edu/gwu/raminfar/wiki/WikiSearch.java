@@ -1,4 +1,4 @@
-package edu.gwu.raminfar.wikicrawler;
+package edu.gwu.raminfar.wiki;
 
 
 import org.jsoup.Jsoup;

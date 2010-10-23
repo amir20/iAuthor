@@ -1,4 +1,4 @@
-package edu.gwu.raminfar.wikicrawler;
+package edu.gwu.raminfar.wiki;
 
 
 import org.jsoup.Jsoup;
@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Author: Amir Raminfar
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
  */
 public class WikiPage {
     private static final Logger logger = Logger.getLogger(WikiPage.class.getName());
+    private static final Pattern REMOVE_FILTER = Pattern.compile("\\[\\d+?\\]");
 
     private final String url;
     private Document doc;
@@ -37,7 +39,7 @@ public class WikiPage {
         for (Element element : elements) {
             sb.append(element.text()).append(" ");
         }
-        return sb.toString().trim();
+        return REMOVE_FILTER.matcher(sb.toString().trim()).replaceAll("");
     }
 
     public String title() throws IOException {
