@@ -1,4 +1,5 @@
 import edu.gwu.raminfar.iauthor.Utils;
+import edu.gwu.raminfar.iauthor.core.Sentence;
 import edu.gwu.raminfar.iauthor.nlp.NlpService;
 import edu.gwu.raminfar.wiki.WikiPage;
 import edu.gwu.raminfar.wiki.WikiSearch;
@@ -24,6 +25,10 @@ public class WikiSearchTest {
     public void computerScience() throws IOException {
         WikiSearch search = new WikiSearch("Computer Science");
         WikiPage first = search.parseResults().iterator().next();
-        System.out.println(Utils.join(NlpService.detectedSentences(first.content()), "\n"));
+        for (String s : NlpService.detectedSentences(first.content())) {
+            Sentence sentence = NlpService.tagSentence(s);
+            System.out.println(s);
+            System.out.println(sentence);
+        }
     }
 }
