@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
  * @author Amir Raminfar
  */
 public class Word implements Comparable<Word> {
-    private static Pattern NON_ALPHA = Pattern.compile("[^a-z\\- ]");
+    private static Pattern NON_ALPHA = Pattern.compile("[^a-z0-9\\- ]");
 
     public enum Type {
         NOUN, PRONOUN, VERB, MODAL, ADJECTIVE, ADJECTIVE_SATELLITE, PARTICLE,
