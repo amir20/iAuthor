@@ -17,9 +17,13 @@ public class WordShape {
     private Word word;
 
     public WordShape(Word word, FontMetrics metrics, int x, int y) {
+        this(word, metrics, x, y, 10);
+    }
+
+    public WordShape(Word word, FontMetrics metrics, int x, int y, int radius) {
         this.word = word;
         int width = metrics.stringWidth(word.getText());
-        wrapper = new ShapeWrapper(new RoundRectangle2D.Double(x, y, width + 10, metrics.getHeight() + 5, 10, 10));
+        wrapper = new ShapeWrapper(new RoundRectangle2D.Double(x, y, width + 10, metrics.getHeight() + 5, radius, radius));
     }
 
     public ShapeWrapper getWrapper() {

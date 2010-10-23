@@ -102,7 +102,7 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
             }
             shapes.clear();
             FontMetrics fm = getFontMetrics(getFont());
-            WordShape shape = new WordShape(event.getCurrentWord(), fm, (int) getBounds().getCenterX(), (int) getBounds().getHeight());
+            WordShape shape = new WordShape(event.getCurrentWord(), fm, (int) getBounds().getCenterX(), (int) getBounds().getHeight(), 0);
             Point center = new Point((int) (getBounds().getCenterX() - shape.getWrapper().getShape().getBounds().getWidth() / 2), (int) (getBounds().getCenterY() - shape.getWrapper().getShape().getBounds().getHeight() / 2));
             shapes.add(shape);
             animator.newAnimation(shape.getWrapper()).setDuration(750).moveTo(center).animate();
