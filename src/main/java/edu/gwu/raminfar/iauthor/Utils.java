@@ -1,5 +1,6 @@
 package edu.gwu.raminfar.iauthor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -22,5 +23,9 @@ public final class Utils {
             }
         }
         return sb.toString();
+    }
+
+    public static String join(Object[] objects, String delimiter) {
+        return join(Arrays.asList(objects), delimiter);
     }
 }

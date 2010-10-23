@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class Animator {
     final private JComponent component;
-    final private List<Animation> queue = new ArrayList<Animation>();
+    final private List<Animation> queue = new ArrayList<Animation>();    
 
     private Timer timer = new Timer(20, new ActionListener() {
         @Override
