@@ -43,6 +43,7 @@ public class TextEditorPane extends JComponent implements CaretListener {
     public TextEditorPane() {
         setLayout(new BorderLayout());
         JScrollPane editorScrollPane = new JScrollPane(textPane);
+        editorScrollPane.setBorder(null);
         add(editorScrollPane, BorderLayout.CENTER);
         textPane.addCaretListener(this);
     }

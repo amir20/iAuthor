@@ -19,18 +19,23 @@ import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Set;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 
 /**
@@ -40,7 +45,7 @@ public class WikiTool extends AbstractTool {
     // lucene
     private final static File index = new File("./lucene/wiki/index");
     private final Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-    private final QueryParser parser = new QueryParser(Version.LUCENE_30, null, analyzer);
+    private final QueryParser parser = new QueryParser(Version.LUCENE_30, "noun", analyzer);
     private IndexWriter writer;
 
     // loader gif
@@ -64,6 +69,8 @@ public class WikiTool extends AbstractTool {
             throw new RuntimeException(e);
         }
         setBackground(Color.white);
+        setPreferredSize(new Dimension(SIZE.width, 300));
+        setMaximumSize(new Dimension(SIZE.width, 300));
     }
 
     @Override
@@ -80,49 +87,87 @@ public class WikiTool extends AbstractTool {
             timer.schedule((task = new TimerTask() {
                 @Override
                 public void run() {
-                    IndexReader reader = null;
                     try {
-                        reader = writer.getReader();
-                        String keywords = Utils.join(nouns, " ");
-                        ApplicationFrame.logger.log(Level.INFO, "Querying wiki: \"{0}\"", keywords);
-                        Set<WikiPage> pages = new WikiSearch(keywords).parseResults(3 /* max docs */);
-                        IndexSearcher searcher = new IndexSearcher(reader);
-
-                        for (WikiPage page : pages) {
-                            try {
-                                Query query = parser.parse("url:" + QueryParser.escape(page.getUrl()));
-                                // make sure it hasn't already been parsed
-                                if (searcher.search(query, 1).totalHits == 0) {
-                                    ApplicationFrame.logger.log(Level.INFO, "Indexing \"{0}\"", page.getUrl());
-                                    for (String s : NlpService.detectedSentences(page.fetchContent())) {
-                                        try {
-                                            Document doc = toDocument(new Sentence(s));
-                                            doc.add(new Field("url", page.getUrl(), Field.Store.YES, Field.Index.ANALYZED));
-                                            writer.addDocument(doc);
-                                        } catch (Exception e) {
-                                            ApplicationFrame.logger.log(Level.WARNING, "Unknown exception", e);
-                                        }
-                                    }
-                                    writer.commit();
-                                    writer.optimize(true);
-                                } else {
-                                    ApplicationFrame.logger.log(Level.INFO, "Already cached \"{0}\"", page.getUrl());
-                                }
-                            } catch (ParseException e) {
-                                ApplicationFrame.logger.log(Level.WARNING, "Parsing exception", e);
-                            }
+                        indexQuery(Utils.join(nouns, " "));
+                        List<Document> docs = findSimilarSentences(event.getSentence());
+                        JPanel list = new JPanel();                        
+                        list.setBackground(getBackground());
+                        list.setLayout(new BoxLayout(list, BoxLayout.PAGE_AXIS));
+                        list.setPreferredSize(getSize());
+                        for (Document doc : docs) {
+                            JLabel f = new JLabel(doc.get("originalSentence"));
+                            list.add(f);
                         }
+                        add(list);
                     } catch (IOException e) {
                         ApplicationFrame.logger.log(Level.WARNING, "Error parsing sentences", e);
                     } catch (Exception e) {
                         ApplicationFrame.logger.log(Level.WARNING, "Unknown exception", e);
                     } finally {
-                        Utils.close(reader);
                         hideLoader();
                         task = null;
                     }
                 }
             }), 300);
+        }
+    }
+
+    private List<Document> findSimilarSentences(Sentence sentence) {
+        List<Document> sentences = new ArrayList<Document>();
+        IndexReader reader = null;
+        try {
+            reader = writer.getReader();
+            IndexSearcher searcher = new IndexSearcher(reader);
+            Query query = parser.parse(QueryParser.escape(Utils.join(sentence.find(Word.Type.NOUN), " ")));
+            TopDocs docs = searcher.search(query, 18);
+            for (ScoreDoc doc : docs.scoreDocs) {
+                Document document = searcher.doc(doc.doc);
+                sentences.add(document);
+            }
+        } catch (IOException e) {
+            ApplicationFrame.logger.log(Level.WARNING, "IOException", e);
+        } catch (ParseException e) {
+            ApplicationFrame.logger.log(Level.WARNING, "Error parsing sentences", e);
+        } finally {
+            Utils.close(reader);
+        }
+        return sentences;
+    }
+
+    private void indexQuery(String keywords) throws IOException {
+        IndexReader reader = null;
+        try {
+            reader = writer.getReader();
+            ApplicationFrame.logger.log(Level.INFO, "Querying wiki: \"{0}\"", keywords);
+            Set<WikiPage> pages = new WikiSearch(keywords).parseResults(3 /* max docs */);
+            IndexSearcher searcher = new IndexSearcher(reader);
+
+            for (WikiPage page : pages) {
+                try {
+                    Query query = parser.parse("url:" + QueryParser.escape(page.getUrl()));
+                    // make sure it hasn't already been parsed
+                    if (searcher.search(query, 1).totalHits == 0) {
+                        ApplicationFrame.logger.log(Level.INFO, "Indexing \"{0}\"", page.getUrl());
+                        for (String s : NlpService.detectedSentences(page.fetchContent())) {
+                            try {
+                                Document doc = toDocument(new Sentence(s));
+                                doc.add(new Field("url", page.getUrl(), Field.Store.YES, Field.Index.ANALYZED));
+                                writer.addDocument(doc);
+                            } catch (Exception e) {
+                                ApplicationFrame.logger.log(Level.WARNING, "Unknown exception", e);
+                            }
+                        }
+                        writer.commit();
+                        writer.optimize(true);
+                    } else {
+                        ApplicationFrame.logger.log(Level.INFO, "Already cached \"{0}\"", page.getUrl());
+                    }
+                } catch (ParseException e) {
+                    ApplicationFrame.logger.log(Level.WARNING, "Parsing exception", e);
+                }
+            }
+        } finally {
+            Utils.close(reader);
         }
     }
 
@@ -135,6 +180,7 @@ public class WikiTool extends AbstractTool {
 
     private void showLoader() {
         if (!loading) {
+            removeAll();
             add(loader);
             revalidate();
             repaint();
