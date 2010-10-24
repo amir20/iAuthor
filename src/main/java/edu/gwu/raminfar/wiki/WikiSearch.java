@@ -29,13 +29,13 @@ public class WikiSearch {
         return parseResults(10);
     }
 
-    public Collection<WikiPage> parseResults(int max) throws IOException {
+    public Set<WikiPage> parseResults(int max) throws IOException {
         Set<WikiPage> results = new LinkedHashSet<WikiPage>();
 
         String url = String.format(SEARCH_URL, query);
         Document doc = Jsoup.connect(url).get();
         Elements elements = doc.select("ul.mw-search-results a");
-        for (int i = 0, elementsSize = elements.size(); i < elementsSize && i < max; i++) {
+        for (int i = 0, elementsSize = elements.size(); i < elementsSize && results.size() < max; i++) {
             Element e = elements.get(i);
             WikiPage page = new WikiPage(e.absUrl("href"));
             if (!results.contains(page)) {
