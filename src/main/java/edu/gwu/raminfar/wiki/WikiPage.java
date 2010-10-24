@@ -18,12 +18,13 @@ import java.util.regex.Pattern;
 public class WikiPage {
     private static final Logger logger = Logger.getLogger(WikiPage.class.getName());
     private static final Pattern REMOVE_FILTER = Pattern.compile("\\[\\d+?\\]");
+    private static final Pattern ANCHOR = Pattern.compile("#.*");
 
     private final String url;
     private Document doc;
 
     public WikiPage(String url) {
-        this.url = url;
+        this.url = ANCHOR.matcher(url).replaceAll("");
     }
 
     private void _connect() throws IOException {
