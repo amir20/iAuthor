@@ -96,6 +96,7 @@ public class WikiTool extends AbstractTool {
                         list.setPreferredSize(getSize());
                         for (Document doc : docs) {
                             JLabel f = new JLabel(doc.get("originalSentence"));
+                            f.setToolTipText(doc.get("originalSentence") + " from " + doc.get("url"));
                             list.add(f);
                         }
                         add(list);
