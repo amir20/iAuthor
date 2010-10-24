@@ -27,9 +27,9 @@ public class TextEditorPane extends JComponent implements CaretListener {
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                System.out.println("Initializing NLP Services...");
+                ApplicationFrame.logger.info("Initializing NLP Services...");
                 NlpService.detectedSentences("");
-                System.out.println("Completed setting up NLP Services...");
+                ApplicationFrame.logger.info("Completed setting up NLP Services...");
                 return null;
             }
 

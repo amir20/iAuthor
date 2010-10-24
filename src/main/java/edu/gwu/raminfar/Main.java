@@ -25,7 +25,7 @@ public class Main {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                System.out.println("Creating frame...");
+                ApplicationFrame.logger.info("Starting application frame...");
                 new ApplicationFrame();
             }
         });
