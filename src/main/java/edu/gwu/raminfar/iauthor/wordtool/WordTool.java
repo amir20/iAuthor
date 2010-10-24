@@ -124,7 +124,7 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
     @Override
     public void setTextPane(JTextPane pane) {
         this.textPane = pane;
-    }
+    }    
 
     @Override
     protected void paintComponent(Graphics g) {

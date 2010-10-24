@@ -13,6 +13,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -25,10 +26,9 @@ import org.apache.lucene.util.Version;
 import javax.swing.*;
 import java.awt.Color;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -39,13 +39,13 @@ import java.util.logging.Level;
 public class WikiTool extends AbstractTool {
     // lucene
     private final static File index = new File("./lucene/wiki/index");
-    Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-    QueryParser parser = new QueryParser(Version.LUCENE_30, null, analyzer);
-    private final IndexWriter writer;
-    private final IndexSearcher searcher;
+    private final Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
+    private final QueryParser parser = new QueryParser(Version.LUCENE_30, null, analyzer);
+    private IndexWriter writer;
 
     // loader gif
     private final JLabel loader = new JLabel(new ImageIcon(this.getClass().getResource("/images/loader.gif")));
+    private boolean loading = false;
 
     // delay thread
     private final Timer timer = new Timer(true);
@@ -53,10 +53,12 @@ public class WikiTool extends AbstractTool {
 
     public WikiTool() {
         try {
-
             Directory directory = new NIOFSDirectory(index);
-            writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
-            searcher = new IndexSearcher(directory, true);
+            try {
+                writer = new IndexWriter(directory, analyzer, false, IndexWriter.MaxFieldLength.UNLIMITED);
+            } catch (FileNotFoundException e) {
+                writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+            }
         } catch (IOException e) {
             ApplicationFrame.logger.log(Level.SEVERE, "Error reading SOLR data for wiki", e);
             throw new RuntimeException(e);
@@ -68,55 +70,43 @@ public class WikiTool extends AbstractTool {
     public void onTextEvent(final TextEditorEvent event) {
         if (task != null) {
             task.cancel();
+            task = null;
         }
-        final List<Word> nouns = new ArrayList<Word>();
-        for (Word w : event.getSentence().getWords()) {
-            if (w.getType() == Word.Type.NOUN) {
-                nouns.add(w);
-            }
-        }
+        final Set<Word> nouns = event.getSentence().find(Word.Type.NOUN);
 
         // only query wiki if there is more than 3 nouns
         if (nouns.size() > 2) {
-            if (task != null) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        add(loader);
-                        revalidate();
-                        repaint();
-                    }
-                });
-            }
+            showLoader();
             timer.schedule((task = new TimerTask() {
                 @Override
                 public void run() {
+                    IndexReader reader = null;
                     try {
+                        reader = writer.getReader();
                         String keywords = Utils.join(nouns, " ");
-                        ApplicationFrame.logger.log(Level.INFO, "Querying wiki with {0}", keywords);
-                        Collection<WikiPage> pages = new WikiSearch(keywords).parseResults(3 /* max docs */);
+                        ApplicationFrame.logger.log(Level.INFO, "Querying wiki: \"{0}\"", keywords);
+                        Set<WikiPage> pages = new WikiSearch(keywords).parseResults(3 /* max docs */);
+                        IndexSearcher searcher = new IndexSearcher(reader);
+
                         for (WikiPage page : pages) {
                             try {
                                 Query query = parser.parse("url:" + QueryParser.escape(page.getUrl()));
                                 // make sure it hasn't already been parsed
                                 if (searcher.search(query, 1).totalHits == 0) {
-                                    ApplicationFrame.logger.log(Level.INFO, "Indexing {0}", page.getUrl());
+                                    ApplicationFrame.logger.log(Level.INFO, "Indexing \"{0}\"", page.getUrl());
                                     for (String s : NlpService.detectedSentences(page.fetchContent())) {
-                                        Sentence sentence = new Sentence(s);
-                                        Document doc = new Document();
-                                        doc.add(new Field("originalSentence", sentence.getRawText(), Field.Store.YES, Field.Index.ANALYZED));
-                                        doc.add(new Field("url", page.getUrl(), Field.Store.YES, Field.Index.ANALYZED));
-                                        for (Word w : sentence.getWords()) {
-                                            if (w.getType() == Word.Type.NOUN) {
-                                                doc.add(new Field("noun", w.getText(), Field.Store.NO, Field.Index.ANALYZED));
-                                            }
+                                        try {
+                                            Document doc = toDocument(new Sentence(s));
+                                            doc.add(new Field("url", page.getUrl(), Field.Store.YES, Field.Index.ANALYZED));
+                                            writer.addDocument(doc);
+                                        } catch (Exception e) {
+                                            ApplicationFrame.logger.log(Level.WARNING, "Unknown exception", e);
                                         }
-                                        writer.addDocument(doc);
                                     }
                                     writer.commit();
                                     writer.optimize(true);
                                 } else {
-                                    ApplicationFrame.logger.log(Level.INFO, "Already cached {0}", page.getUrl());
+                                    ApplicationFrame.logger.log(Level.INFO, "Already cached \"{0}\"", page.getUrl());
                                 }
                             } catch (ParseException e) {
                                 ApplicationFrame.logger.log(Level.WARNING, "Parsing exception", e);
@@ -124,20 +114,49 @@ public class WikiTool extends AbstractTool {
                         }
                     } catch (IOException e) {
                         ApplicationFrame.logger.log(Level.WARNING, "Error parsing sentences", e);
+                    } catch (Exception e) {
+                        ApplicationFrame.logger.log(Level.WARNING, "Unknown exception", e);
                     } finally {
-                        remove(loader);
-                        revalidate();
-                        repaint();
+                        Utils.close(reader);
+                        hideLoader();
                         task = null;
                     }
                 }
-            }), 250);
+            }), 300);
         }
-
     }
 
 
     @Override
-    public void setTextPane(JTextPane pane) {
+    public void onClose() {
+        Utils.close(writer);
+    }
+
+
+    private void showLoader() {
+        if (!loading) {
+            add(loader);
+            revalidate();
+            repaint();
+            loading = true;
+        }
+    }
+
+    private void hideLoader() {
+        if (loading) {
+            remove(loader);
+            revalidate();
+            repaint();
+            loading = false;
+        }
+    }
+
+    private Document toDocument(Sentence sentence) {
+        Document doc = new Document();
+        doc.add(new Field("originalSentence", sentence.getRawText(), Field.Store.YES, Field.Index.ANALYZED));
+        for (Word w : sentence.find(Word.Type.NOUN)) {
+            doc.add(new Field("noun", w.getText(), Field.Store.NO, Field.Index.ANALYZED));
+        }
+        return doc;
     }
 }
