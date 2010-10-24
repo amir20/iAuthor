@@ -16,18 +16,12 @@ public class OpenNlpTest {
 
     @Test
     public void nlp() throws IOException {
-
-
         String[] sentences = NlpService.detectedSentences("I found a great set of tools for natural language processing. The Java package includes a sentence detector, a tokenizer, a parts-of-speech (POS) tagger, and a treebank parser. It took me a little while to figure out where to start so I thought I'd post my findings here. I'm no linguist and I don't have previous experience with NLP, but hopefully this will help some one get setup with OpenNLP.");
-
-
         for (String s : sentences) {
             Sentence sentence = new Sentence(s);
             for (Word word : sentence) {
                 System.out.printf("%s / %s \n", word.getText(), word.getType());
             }
         }
-
-
     }
 }

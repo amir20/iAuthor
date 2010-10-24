@@ -9,6 +9,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -25,16 +26,21 @@ public class WikiSearch {
     }
 
     public Collection<WikiPage> parseResults() throws IOException {
-        Set<WikiPage> results = new HashSet<WikiPage>();
+        return parseResults(10);
+    }
+
+    public Collection<WikiPage> parseResults(int max) throws IOException {
+        Set<WikiPage> results = new LinkedHashSet<WikiPage>();
 
         String url = String.format(SEARCH_URL, query);
         Document doc = Jsoup.connect(url).get();
         Elements elements = doc.select("ul.mw-search-results a");
-        for (Element e : elements) {
+        for (int i = 0, elementsSize = elements.size(); i < elementsSize && i < max; i++) {
+            Element e = elements.get(i);
             WikiPage page = new WikiPage(e.absUrl("href"));
             if (!results.contains(page)) {
                 results.add(page);
-            }
+            }            
         }
 
         return results;

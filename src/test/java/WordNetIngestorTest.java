@@ -97,8 +97,8 @@ public class WordNetIngestorTest {
     public void testLucene() throws IOException, ParseException {
         IndexSearcher searcher = new IndexSearcher(new NIOFSDirectory(new File(getClass().getResource("/lucene/wordnet/index").getFile())));
         Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-        QueryParser parser = new QueryParser(Version.LUCENE_30, "", analyzer);
-        Query query = parser.parse("word:'wager' AND type:NOUN");
+        QueryParser parser = new QueryParser(Version.LUCENE_30, "word", analyzer);
+        Query query = parser.parse("wager");
 
         TopDocs docs = searcher.search(query, 10);
         for (ScoreDoc doc : docs.scoreDocs) {

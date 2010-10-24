@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 public class WordTool extends AbstractTool implements MouseListener, MouseMotionListener {
     private final IndexSearcher searcher;
     private final Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-    private final QueryParser parser = new QueryParser(Version.LUCENE_30, "", analyzer);
+    private final QueryParser parser = new QueryParser(Version.LUCENE_30, "word", analyzer);
     private final Pattern endings = Pattern.compile(".+(ing|s|ed)$");
     private final Animator animator = new Animator(this);
 
@@ -47,7 +47,7 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
 
     public WordTool() {
         try {
-            searcher = new IndexSearcher(new NIOFSDirectory(new File(getClass().getResource("/lucene/wordnet/index").getFile())));
+            searcher = new IndexSearcher(new NIOFSDirectory(new File(getClass().getResource("/lucene/wordnet/index").getFile())), true);
         } catch (IOException e) {
             ApplicationFrame.logger.log(Level.SEVERE, "Error while reading indexer data for wordnet", e);
             throw new RuntimeException(e);
@@ -61,7 +61,7 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
         List<Word> synonyms = Collections.emptyList();
         try {
             String text = QueryParser.escape(word.getText());
-            StringBuilder sb = new StringBuilder("word:");
+            StringBuilder sb = new StringBuilder();
             sb.append(text);
             if (word.getType() != Word.Type.UNKNOWN) {
                 sb.append(" AND type:").append(word.getType().toString());
