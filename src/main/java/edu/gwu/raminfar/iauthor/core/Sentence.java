@@ -5,7 +5,9 @@ import edu.gwu.raminfar.iauthor.nlp.NlpService;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Amir Raminfar
@@ -24,6 +26,17 @@ public class Sentence implements Iterable<Word> {
 
     public String getRawText() {
         return rawText;
+    }
+
+    public Set<Word> find(Word.Type type) {
+        Set<Word> found = new LinkedHashSet<Word>();
+        for (Word word : getWords()) {
+            if (word.getType() == type) {
+                found.add(word);
+            }
+        }
+
+        return found;
     }
 
     @Override
