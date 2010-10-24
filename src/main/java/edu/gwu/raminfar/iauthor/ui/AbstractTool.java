@@ -19,5 +19,7 @@ public abstract class AbstractTool extends JPanel {
 
     public abstract void onTextEvent(TextEditorEvent event);
 
-    public abstract void setTextPane(JTextPane pane);
+    public void setTextPane(JTextPane pane){}
+
+    public void onClose() {}
 }

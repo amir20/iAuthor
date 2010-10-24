@@ -9,6 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +21,11 @@ import java.util.logging.Logger;
 /**
  * @author Amir Raminfar
  */
-public class ApplicationFrame extends JFrame {
+public class ApplicationFrame extends JFrame implements WindowListener{
     public static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
     private final TextEditorPane editor = new TextEditorPane();
+    private final List<AbstractTool> tools = new ArrayList<AbstractTool>();
+
 
     public ApplicationFrame() throws HeadlessException {
         super(Main.APP_NAME);
@@ -42,8 +46,6 @@ public class ApplicationFrame extends JFrame {
         add(panel, BorderLayout.EAST);
 
         List<Class<? extends AbstractTool>> classes = getTools();
-        List<AbstractTool> tools = new ArrayList<AbstractTool>();
-
         for (Class<? extends AbstractTool> c : classes) {
             try {
                 AbstractTool tool = c.newInstance();
@@ -86,5 +88,36 @@ public class ApplicationFrame extends JFrame {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        for (AbstractTool tool : tools) {
+            tool.onClose();
+        }
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
     }
 }
