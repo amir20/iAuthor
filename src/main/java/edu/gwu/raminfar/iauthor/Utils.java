@@ -1,10 +1,14 @@
 package edu.gwu.raminfar.iauthor;
 
 import edu.gwu.raminfar.iauthor.core.Word;
+import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 /**
  * @author Amir Raminfar
@@ -25,5 +29,17 @@ public final class Utils {
             }
         }
         return sb.toString();
+    }
+
+    public static void close(Closeable... closeables) {
+        for (Closeable closeable : closeables) {
+            if (closeable != null) {
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                    ApplicationFrame.logger.log(Level.WARNING, "Error when closing", e);
+                }
+            }
+        }
     }
 }
