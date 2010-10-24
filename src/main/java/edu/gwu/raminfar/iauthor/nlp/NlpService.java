@@ -47,7 +47,7 @@ public final class NlpService {
 
     private static final SentenceDetector sentenceDetector = new SentenceDetectorME(sentenceModel);
 
-    public static Sentence tagSentence(String text) {
+    public static List<Word> tagSentence(String text) {
         String tagged = tagger.tag(text);
         String[] tags = tagged.split(" ");
         List<Word> words = new ArrayList<Word>();
@@ -57,8 +57,9 @@ public final class NlpService {
             Word word = new Word(split[0], type);
             words.add(word);
         }
-        return new Sentence(words);
+        return words;
     }
+
 
     public static String[] detectedSentences(String paragraph) {
         return sentenceDetector.sentDetect(paragraph);

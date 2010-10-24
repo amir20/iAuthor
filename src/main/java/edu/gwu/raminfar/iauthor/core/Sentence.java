@@ -1,6 +1,7 @@
 package edu.gwu.raminfar.iauthor.core;
 
 import edu.gwu.raminfar.iauthor.Utils;
+import edu.gwu.raminfar.iauthor.nlp.NlpService;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -11,13 +12,18 @@ import java.util.List;
  */
 public class Sentence implements Iterable<Word> {
     private List<Word> words;
+    private final String rawText;
 
-    public Sentence(List<Word> words) {
-        this.words = Collections.unmodifiableList(words);
+    public Sentence(String text) {
+        this.rawText = text;
     }
 
     public List<Word> getWords() {
-        return words;
+        return words != null ? words : (words = Collections.unmodifiableList(NlpService.tagSentence(rawText)));
+    }
+
+    public String getRawText() {
+        return rawText;
     }
 
     @Override
@@ -30,16 +36,16 @@ public class Sentence implements Iterable<Word> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Sentence sentence = (Sentence) o;
-        return !(words != null ? !words.equals(sentence.words) : sentence.words != null);
+        return !(rawText != null ? !rawText.equals(sentence.rawText) : sentence.rawText != null);
     }
 
     @Override
     public int hashCode() {
-        return words != null ? words.hashCode() : 0;
+        return rawText != null ? rawText.hashCode() : 0;
     }
 
     @Override
     public Iterator<Word> iterator() {
-        return words.iterator();
+        return getWords().iterator();
     }
 }

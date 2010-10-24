@@ -23,8 +23,8 @@ public class Word implements Comparable<Word> {
 
     @Override
     public String toString() {
-        return getText();
-    }
+        return String.format("%s/%s", word, type);
+    }    
 
     public Type getType() {
         return type;

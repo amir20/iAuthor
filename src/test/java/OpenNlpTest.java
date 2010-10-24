@@ -22,7 +22,7 @@ public class OpenNlpTest {
 
 
         for (String s : sentences) {
-            Sentence sentence = NlpService.tagSentence(s);
+            Sentence sentence = new Sentence(s);
             for (Word word : sentence) {
                 System.out.printf("%s / %s \n", word.getText(), word.getType());
             }

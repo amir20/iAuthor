@@ -1,4 +1,3 @@
-import edu.gwu.raminfar.iauthor.Utils;
 import edu.gwu.raminfar.iauthor.core.Sentence;
 import edu.gwu.raminfar.iauthor.nlp.NlpService;
 import edu.gwu.raminfar.wiki.WikiPage;
@@ -17,7 +16,7 @@ public class WikiSearchTest {
     public void middleEast() throws IOException {
         WikiSearch search = new WikiSearch("middle east");
         for (WikiPage page : search.parseResults()) {
-            System.out.println(page.getUrl() + ": " + page.content());
+            System.out.println(page.getUrl() + ": " + page.fetchContent());
         }
     }
 
@@ -25,8 +24,8 @@ public class WikiSearchTest {
     public void computerScience() throws IOException {
         WikiSearch search = new WikiSearch("Computer Science");
         WikiPage first = search.parseResults().iterator().next();
-        for (String s : NlpService.detectedSentences(first.content())) {
-            Sentence sentence = NlpService.tagSentence(s);
+        for (String s : NlpService.detectedSentences(first.fetchContent())) {
+            Sentence sentence = new Sentence(s);
             System.out.println(s);
             System.out.println(sentence);
         }

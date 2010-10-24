@@ -87,7 +87,7 @@ public class TextEditorPane extends JComponent implements CaretListener {
                     // find the current sentence
                     String detectedSentence = findCurrentSentence(fromStartOfParagraph, sentences);
                     int fromStartOfSentence = fromStartOfParagraph - paragraph.indexOf(detectedSentence);
-                    Sentence sentence = NlpService.tagSentence(detectedSentence);
+                    Sentence sentence = new Sentence(detectedSentence);
 
                     // find the current word
                     Word currentWord = findCurrentWord(fromStartOfSentence, sentence);

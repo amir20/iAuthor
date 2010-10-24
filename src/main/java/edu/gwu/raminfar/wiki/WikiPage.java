@@ -32,7 +32,7 @@ public class WikiPage {
         }
     }
 
-    public String content() throws IOException {
+    public String fetchContent() throws IOException {
         _connect();
         StringBuilder sb = new StringBuilder();
         Elements elements = doc.select("div#bodyContent p, div#bodyContent blockquote");
@@ -42,7 +42,7 @@ public class WikiPage {
         return REMOVE_FILTER.matcher(sb.toString().trim()).replaceAll("");
     }
 
-    public String title() throws IOException {
+    public String findTitle() throws IOException {
         _connect();
         return doc.title();
     }
@@ -55,7 +55,7 @@ public class WikiPage {
     public String toString() {
         String title = "";
         try {
-            title = title();
+            title = findTitle();
         } catch (IOException e) {
             logger.log(Level.WARNING, "Error parsing title", e);
 
