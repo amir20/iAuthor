@@ -40,6 +40,7 @@ public class ApplicationFrame extends JFrame {
         setSize(new Dimension((int) (d.width * .75), (int) (d.height * .75)));
         setLocationRelativeTo(null);
         setVisible(true);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
     private void addRightRail() {
@@ -101,14 +102,15 @@ public class ApplicationFrame extends JFrame {
                     quitResponse.performQuit();
                 }
             });
-        } else {
-            addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    closeTools();
-                }
-            });
         }
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                closeTools();
+            }
+        });
+
     }
 
     private void closeTools() {
