@@ -1,16 +1,18 @@
 package edu.gwu.raminfar.iauthor.ui;
 
+import com.apple.eawt.AppEvent;
+import com.apple.eawt.Application;
+import com.apple.eawt.QuitHandler;
+import com.apple.eawt.QuitResponse;
 import edu.gwu.raminfar.Main;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +23,7 @@ import java.util.logging.Logger;
 /**
  * @author Amir Raminfar
  */
-public class ApplicationFrame extends JFrame implements WindowListener{
+public class ApplicationFrame extends JFrame {
     public static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
     private final TextEditorPane editor = new TextEditorPane();
     private final List<AbstractTool> tools = new ArrayList<AbstractTool>();
@@ -29,7 +31,7 @@ public class ApplicationFrame extends JFrame implements WindowListener{
 
     public ApplicationFrame() throws HeadlessException {
         super(Main.APP_NAME);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        addListeners();
         setLayout(new BorderLayout());
         add(editor, BorderLayout.CENTER);
         addRightRail();
@@ -90,34 +92,29 @@ public class ApplicationFrame extends JFrame implements WindowListener{
         }
     }
 
-    @Override
-    public void windowOpened(WindowEvent e) {
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        for (AbstractTool tool : tools) {
-            tool.onClose();
+    private void addListeners() {
+        if (Main.IS_MAC) {
+            Application.getApplication().setQuitHandler(new QuitHandler() {
+                @Override
+                public void handleQuitRequestWith(AppEvent.QuitEvent quitEvent, QuitResponse quitResponse) {
+                    closeTools();
+                    quitResponse.performQuit();
+                }
+            });
+        } else {
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    closeTools();
+                }
+            });
         }
     }
 
-    @Override
-    public void windowClosed(WindowEvent e) {
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
+    private void closeTools() {
+        System.out.println("closing window");
+        for (AbstractTool tool : tools) {
+            tool.onClose();
+        }
     }
 }
