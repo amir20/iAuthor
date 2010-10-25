@@ -112,7 +112,7 @@ public class ApplicationFrame extends JFrame {
     }
 
     private void closeTools() {
-        System.out.println("closing window");
+        logger.info("Closing all tools...");
         for (AbstractTool tool : tools) {
             tool.onClose();
         }
