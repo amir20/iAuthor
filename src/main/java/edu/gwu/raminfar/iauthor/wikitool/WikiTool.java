@@ -80,10 +80,10 @@ public class WikiTool extends AbstractTool {
             task = null;
         }
         final Set<Word> nouns = event.getSentence().find(Word.Type.NOUN);
+        showLoader();
 
         // only query wiki if there is more than 3 nouns
         if (nouns.size() > 2) {
-            showLoader();
             timer.schedule((task = new TimerTask() {
                 @Override
                 public void run() {
