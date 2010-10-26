@@ -13,7 +13,7 @@ public interface Easing {
      */
     double ease(double t, double b, double c, double d);
 
-    public static Easing Linear = new Easing() {
+    public final static Easing Linear = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             t /= d;
@@ -22,7 +22,7 @@ public interface Easing {
     };
 
     // Cubic
-    public static Easing OutCubic = new Easing() {
+    public final static Easing OutCubic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -31,7 +31,7 @@ public interface Easing {
         }
     };
 
-    public static Easing InOutCubic = new Easing() {
+    public final static Easing InOutCubic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -40,7 +40,7 @@ public interface Easing {
         }
     };
 
-    public static Easing BackInCubic = new Easing() {
+    public final static Easing BackInCubic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -49,7 +49,7 @@ public interface Easing {
         }
     };
 
-    public static Easing BackOutCubic = new Easing() {
+    public final static Easing BackOutCubic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -60,7 +60,7 @@ public interface Easing {
 
 
     // Quintic
-    public static Easing OutQuintic = new Easing() {
+    public final static Easing OutQuintic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -69,7 +69,7 @@ public interface Easing {
         }
     };
 
-    public static Easing InOutQuintic = new Easing() {
+    public final static Easing InOutQuintic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -79,7 +79,7 @@ public interface Easing {
     };
 
     // Quartic
-    public static Easing OutQuartic = new Easing() {
+    public final static Easing OutQuartic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -88,7 +88,7 @@ public interface Easing {
         }
     };
 
-    public static Easing InQuartic = new Easing() {
+    public final static Easing InQuartic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -97,7 +97,7 @@ public interface Easing {
         }
     };
 
-    public static Easing BackInQuartic = new Easing() {
+    public final static Easing BackInQuartic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -106,7 +106,7 @@ public interface Easing {
         }
     };
 
-    public static Easing BackOutQuartic = new Easing() {
+    public final static Easing BackOutQuartic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -115,7 +115,7 @@ public interface Easing {
         }
     };
 
-    public static Easing InOutQuartic = new Easing() {
+    public final static Easing InOutQuartic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -126,7 +126,7 @@ public interface Easing {
 
 
     // Elastic
-    public static Easing OutElastic = new Easing() {
+    public final static Easing OutElastic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;
@@ -135,7 +135,7 @@ public interface Easing {
         }
     };
 
-    public static Easing InElastic = new Easing() {
+    public final static Easing InElastic = new Easing() {
         @Override
         public double ease(double t, double b, double c, double d) {
             double ts = (t /= d) * t;

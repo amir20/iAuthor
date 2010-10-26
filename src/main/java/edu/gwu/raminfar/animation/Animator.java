@@ -1,7 +1,6 @@
 package edu.gwu.raminfar.animation;
 
-import javax.swing.JComponent;
-import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,8 +13,8 @@ import java.util.List;
  * @author Amir Raminfar
  */
 public class Animator {
-    final private JComponent component;
-    final private List<Animation> queue = new ArrayList<Animation>();    
+    private final JComponent component;
+    private final List<Animation> queue = new ArrayList<Animation>();
 
     private Timer timer = new Timer(20, new ActionListener() {
         @Override
