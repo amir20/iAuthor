@@ -6,13 +6,13 @@ import com.apple.eawt.QuitHandler;
 import com.apple.eawt.QuitResponse;
 import edu.gwu.raminfar.Main;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.HeadlessException;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +27,30 @@ public class ApplicationFrame extends JFrame {
     public static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
     private final TextEditorPane editor = new TextEditorPane();
     private final List<AbstractTool> tools = new ArrayList<AbstractTool>();
-
+    private BufferedImage background;
 
     public ApplicationFrame() throws HeadlessException {
         super(Main.APP_NAME);
+        try {
+            background = ImageIO.read(getClass().getResource("/images/background.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setContentPane(new JComponent() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                double sx = (double) getWidth() / background.getWidth();
+                double sy = (double) getHeight() / background.getHeight();
+                Graphics2D g2d = (Graphics2D) g.create();
+                AffineTransform transform = new AffineTransform();
+                transform.scale(sx, sy);
+                g2d.setTransform(transform);
+                g2d.drawImage(background, 0, 0, null);
+                g2d.dispose();
+                super.paintComponent(g);
+            }
+        });
+
         addListeners();
         setLayout(new BorderLayout());
         add(editor, BorderLayout.CENTER);
@@ -45,6 +65,7 @@ public class ApplicationFrame extends JFrame {
 
     private void addRightRail() {
         final JPanel panel = new JPanel();
+        panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         add(panel, BorderLayout.EAST);
 
