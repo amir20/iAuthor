@@ -45,7 +45,7 @@ public class ApplicationFrame extends JFrame {
                 AffineTransform transform = new AffineTransform();
                 transform.scale(sx, sy);
                 g2d.setTransform(transform);
-                g2d.drawImage(background, 0, 0, null);
+                g2d.drawImage(background, 0, -1, null);
                 g2d.dispose();
                 super.paintComponent(g);
             }
@@ -57,7 +57,7 @@ public class ApplicationFrame extends JFrame {
         addRightRail();
 
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(new Dimension((int) (d.width * .75), (int) (d.height * .75)));
+        setSize(new Dimension((int) (d.width * .85), (int) (d.height * .75)));
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -73,7 +73,7 @@ public class ApplicationFrame extends JFrame {
         for (Class<? extends AbstractTool> c : classes) {
             try {
                 AbstractTool tool = c.newInstance();
-                panel.add(tool);
+                panel.add(new ToolWrapper(tool));
                 tools.add(tool);
                 tool.setTextPane(editor.getTextPane());
             } catch (InstantiationException e) {
