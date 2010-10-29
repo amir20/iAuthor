@@ -102,19 +102,21 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
             }
             shapes.clear();
             FontMetrics fm = getFontMetrics(getFont());
-            WordShape shape = new WordShape(event.getCurrentWord(), fm, (int) getBounds().getCenterX(), (int) getBounds().getHeight(), 0);
+            WordShape shape = new WordShape(event.getCurrentWord(), fm, 100, 100, 0);
             Point center = new Point((int) (getBounds().getCenterX() - shape.getWrapper().getShape().getBounds().getWidth() / 2), (int) (getBounds().getCenterY() - shape.getWrapper().getShape().getBounds().getHeight() / 2));
+            center.y -= 10;
             shapes.add(shape);
             animator.newAnimation(shape.getWrapper()).setDuration(750).moveTo(center).animate();
             double delta = 2 * Math.PI / synonyms.size();
-
-            int h = 100;
+            int h = 105;
             for (int i = 1, synonymsSize = synonyms.size(); i < synonymsSize; i++) {
                 Word syn = synonyms.get(i);
                 double angle = (i) * delta;
                 WordShape _shape = new WordShape(syn, fm, (int) getBounds().getCenterX(), (int) getBounds().getCenterY());
                 int x = (int) ((((Math.cos(angle) * h) + getBounds().getCenterX()) - _shape.getWrapper().getShape().getBounds().getWidth() / 2));
                 int y = (int) (((Math.sin(angle) * h) + getBounds().getCenterY()) - _shape.getWrapper().getShape().getBounds().getHeight() / 2);
+                x -= 20;
+                y -= 20;
                 animator.newAnimation(_shape.getWrapper()).setDuration(900).moveTo(new Point(x, y)).animate();
                 shapes.add(_shape);
             }

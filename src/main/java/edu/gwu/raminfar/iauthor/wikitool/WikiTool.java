@@ -7,6 +7,7 @@ import edu.gwu.raminfar.iauthor.core.Word;
 import edu.gwu.raminfar.iauthor.nlp.NlpService;
 import edu.gwu.raminfar.iauthor.ui.AbstractTool;
 import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
+import edu.gwu.raminfar.iauthor.ui.ToolWrapper;
 import edu.gwu.raminfar.wiki.WikiPage;
 import edu.gwu.raminfar.wiki.WikiSearch;
 import org.apache.lucene.analysis.Analyzer;
@@ -25,16 +26,15 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Insets;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.Timer;
 import java.util.logging.Level;
 
@@ -42,6 +42,16 @@ import java.util.logging.Level;
  * @author Amir Raminfar
  */
 public class WikiTool extends AbstractTool {
+    // load background
+    protected final static BufferedImage BACKGROUND;
+    static {
+        try {
+            BACKGROUND = ImageIO.read(ToolWrapper.class.getResource("/images/wiki.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // lucene
     private final static File index = new File("./lucene/wiki/index");
     private final Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
@@ -69,8 +79,8 @@ public class WikiTool extends AbstractTool {
             throw new RuntimeException(e);
         }
         setBackground(Color.white);
-        setPreferredSize(new Dimension(SIZE.width, 300));
-        setMaximumSize(new Dimension(SIZE.width, 300));
+        setPreferredSize(SIZE);
+        setMaximumSize(SIZE);
     }
 
     @Override
@@ -90,13 +100,13 @@ public class WikiTool extends AbstractTool {
                     try {
                         indexQuery(Utils.join(nouns, " "));
                         List<Document> docs = findSimilarSentences(event.getSentence());
-                        JPanel list = new JPanel();                        
-                        list.setBackground(getBackground());
+                        JPanel list = new JPanel();
+                        list.setOpaque(false);
                         list.setLayout(new BoxLayout(list, BoxLayout.PAGE_AXIS));
                         list.setPreferredSize(getSize());
                         for (Document doc : docs) {
                             JLabel f = new JLabel(doc.get("originalSentence"));
-                            f.setToolTipText(doc.get("originalSentence") + " from " + doc.get("url"));
+                            f.setToolTipText(doc.get("originalSentence") + " from [" + doc.get("url") + "]");
                             list.add(f);
                         }
                         add(list);
@@ -120,7 +130,7 @@ public class WikiTool extends AbstractTool {
             reader = writer.getReader();
             IndexSearcher searcher = new IndexSearcher(reader);
             Query query = parser.parse(QueryParser.escape(Utils.join(sentence.find(Word.Type.NOUN), " ")));
-            TopDocs docs = searcher.search(query, 18);
+            TopDocs docs = searcher.search(query, 15);
             for (ScoreDoc doc : docs.scoreDocs) {
                 Document document = searcher.doc(doc.doc);
                 sentences.add(document);
@@ -178,6 +188,10 @@ public class WikiTool extends AbstractTool {
         Utils.close(writer);
     }
 
+    @Override
+    protected BufferedImage getBackgroundImage() {
+        return BACKGROUND;
+    }
 
     private void showLoader() {
         if (!loading) {
