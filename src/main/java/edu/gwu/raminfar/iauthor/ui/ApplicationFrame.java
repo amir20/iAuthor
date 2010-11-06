@@ -27,20 +27,21 @@ public class ApplicationFrame extends JFrame {
     public static final Logger logger = Logger.getLogger(ApplicationFrame.class.getName());
     private final TextEditorPane editor = new TextEditorPane();
     private final List<AbstractTool> tools = new ArrayList<AbstractTool>();
-    private BufferedImage background;
+    private final BufferedImage background;
 
     public ApplicationFrame() throws HeadlessException {
         super(Main.APP_NAME);
         try {
             background = ImageIO.read(getClass().getResource("/images/background.png"));
         } catch (IOException e) {
-            e.printStackTrace();
+            ApplicationFrame.logger.log(Level.WARNING, "", e);
+            throw new RuntimeException(e);
         }
         setContentPane(new JComponent() {
             @Override
             protected void paintComponent(Graphics g) {
                 double sx = (double) getWidth() / background.getWidth();
-                double sy = (double) getHeight() / background.getHeight();
+                double sy = (double) (getHeight() + 1) / background.getHeight();
                 Graphics2D g2d = (Graphics2D) g.create();
                 AffineTransform transform = new AffineTransform();
                 transform.scale(sx, sy);

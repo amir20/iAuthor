@@ -5,12 +5,20 @@ import edu.gwu.raminfar.iauthor.core.TextEditorEvent;
 import edu.gwu.raminfar.iauthor.core.Word;
 import edu.gwu.raminfar.iauthor.nlp.NlpService;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import java.awt.BorderLayout;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
 
 
 /**
@@ -18,10 +26,12 @@ import java.util.Collection;
  * Date: Sep 25, 2010
  */
 public class TextEditorPane extends JComponent implements CaretListener {
+    private static final BufferedImage background;
+    private static boolean ready = false;
+
     private final JTextPane textPane = new JTextPane();
     private Collection<AbstractTool> tools;
     private TextEditorEvent lastEvent;
-    private static boolean ready = false;
 
     static {
         new SwingWorker<Void, Void>() {
@@ -38,18 +48,41 @@ public class TextEditorPane extends JComponent implements CaretListener {
                 ready = true;
             }
         }.execute();
+        try {
+            background = ImageIO.read(TextEditorPane.class.getResource("/images/papers.png"));
+        } catch (IOException e) {
+            ApplicationFrame.logger.log(Level.WARNING, "", e);
+            throw new RuntimeException(e);
+        }
     }
 
     public TextEditorPane() {
         setLayout(new BorderLayout());
+        setOpaque(false);
         JScrollPane editorScrollPane = new JScrollPane(textPane);
-        editorScrollPane.setBorder(null);
-        add(editorScrollPane, BorderLayout.CENTER);
+        editorScrollPane.setBorder(BorderFactory.createEmptyBorder(60, 40, 0, 0));
+        editorScrollPane.setOpaque(false);
+        editorScrollPane.getViewport().setOpaque(false);
+        textPane.setOpaque(false);
         textPane.addCaretListener(this);
+        editorScrollPane.setMinimumSize(new Dimension(710, 600));
+        editorScrollPane.setPreferredSize(new Dimension(710, 600));
+        editorScrollPane.setMaximumSize(new Dimension(710, 6000));
+
+        Box hBox = Box.createHorizontalBox();
+        hBox.add(editorScrollPane);
+        hBox.setOpaque(false);
+        add(hBox, BorderLayout.CENTER);
     }
 
     public void setTools(Collection<AbstractTool> tools) {
         this.tools = new ArrayList<AbstractTool>(tools);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        g.drawImage(background, 0,0, null);
+        super.paintComponent(g);
     }
 
     public JTextPane getTextPane() {
