@@ -56,9 +56,7 @@ public class ApplicationFrame extends JFrame {
         setLayout(new BorderLayout());
         add(editor, BorderLayout.CENTER);
         addRightRail();
-
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(new Dimension((int) (d.width * .85), (int) (d.height * .75)));
+        setSize(new Dimension(1150, 700));
         setLocationRelativeTo(null);
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
