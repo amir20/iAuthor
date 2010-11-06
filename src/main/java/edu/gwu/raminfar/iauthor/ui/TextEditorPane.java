@@ -71,7 +71,6 @@ public class TextEditorPane extends JComponent implements CaretListener {
 
         Box hBox = Box.createHorizontalBox();
         hBox.add(editorScrollPane);
-        hBox.setOpaque(false);
         add(hBox, BorderLayout.CENTER);
     }
 
