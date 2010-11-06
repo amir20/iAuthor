@@ -58,9 +58,9 @@ public class TextEditorPane extends JComponent implements CaretListener {
 
     public TextEditorPane() {
         setLayout(new BorderLayout());
-        setOpaque(false);
         JScrollPane editorScrollPane = new JScrollPane(textPane);
-        editorScrollPane.setBorder(BorderFactory.createEmptyBorder(60, 40, 0, 0));
+        editorScrollPane.setBorder(BorderFactory.createEmptyBorder(60, 50, 0, 0));
+        setOpaque(false);
         editorScrollPane.setOpaque(false);
         editorScrollPane.getViewport().setOpaque(false);
         textPane.setOpaque(false);
@@ -68,7 +68,6 @@ public class TextEditorPane extends JComponent implements CaretListener {
         editorScrollPane.setMinimumSize(new Dimension(710, 600));
         editorScrollPane.setPreferredSize(new Dimension(710, 600));
         editorScrollPane.setMaximumSize(new Dimension(710, 6000));
-
         Box hBox = Box.createHorizontalBox();
         hBox.add(editorScrollPane);
         add(hBox, BorderLayout.CENTER);
