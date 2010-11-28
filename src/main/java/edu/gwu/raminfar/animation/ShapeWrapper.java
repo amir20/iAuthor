@@ -1,6 +1,6 @@
 package edu.gwu.raminfar.animation;
 
-import java.awt.Shape;
+import java.awt.*;
 
 /**
  * @author Amir Raminfar

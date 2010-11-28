@@ -1,6 +1,5 @@
 package edu.gwu.raminfar.iauthor.nlp;
 
-import edu.gwu.raminfar.iauthor.core.Sentence;
 import edu.gwu.raminfar.iauthor.core.Word;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTagger;

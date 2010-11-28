@@ -3,10 +3,7 @@ package edu.gwu.raminfar.iauthor.wordtool;
 import edu.gwu.raminfar.animation.ShapeWrapper;
 import edu.gwu.raminfar.iauthor.core.Word;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
 /**

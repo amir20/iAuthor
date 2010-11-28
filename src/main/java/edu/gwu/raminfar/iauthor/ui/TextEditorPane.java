@@ -9,11 +9,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -79,7 +75,7 @@ public class TextEditorPane extends JComponent implements CaretListener {
 
     @Override
     protected void paintComponent(Graphics g) {
-        g.drawImage(background, 0,0, null);
+        g.drawImage(background, 0, 0, null);
         super.paintComponent(g);
     }
 

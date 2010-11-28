@@ -17,7 +17,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 
-import javax.swing.JTextPane;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -126,7 +126,7 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
     @Override
     public void setTextPane(JTextPane pane) {
         this.textPane = pane;
-    }    
+    }
 
     @Override
     protected void paintComponent(Graphics g) {

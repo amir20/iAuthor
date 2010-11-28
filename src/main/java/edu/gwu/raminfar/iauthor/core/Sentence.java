@@ -41,7 +41,7 @@ public class Sentence implements Iterable<Word> {
 
     @Override
     public String toString() {
-        return Utils.join(words, " ");
+        return Utils.join(getWords(), " ");
     }
 
     @Override
