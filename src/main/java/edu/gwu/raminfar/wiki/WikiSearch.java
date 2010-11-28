@@ -8,7 +8,6 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -40,7 +39,7 @@ public class WikiSearch {
             WikiPage page = new WikiPage(e.absUrl("href"));
             if (!results.contains(page)) {
                 results.add(page);
-            }            
+            }
         }
 
         return results;

@@ -5,7 +5,6 @@ import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -19,12 +18,14 @@ public final class Utils {
 
     public static String join(Collection<Word> objects, String delimiter) {
         StringBuilder sb = new StringBuilder();
-        for (Iterator<Word> iterator = objects.iterator(); iterator.hasNext();) {
-            Word w = iterator.next();
-            if (w != null) {
-                sb.append(w.getText());
-                if (iterator.hasNext()) {
-                    sb.append(delimiter);
+        if (objects != null) {
+            for (Iterator<Word> iterator = objects.iterator(); iterator.hasNext();) {
+                Word w = iterator.next();
+                if (w != null) {
+                    sb.append(w.getText());
+                    if (iterator.hasNext()) {
+                        sb.append(delimiter);
+                    }
                 }
             }
         }
