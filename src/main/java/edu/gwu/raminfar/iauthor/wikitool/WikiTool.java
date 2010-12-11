@@ -63,7 +63,9 @@ public class WikiTool extends AbstractTool {
 
     // loader gif
     private final JLabel loader = new JLabel(new ImageIcon(this.getClass().getResource("/images/loader.gif")));
+    private final JTextPane needMoreLabel = new JTextPane();
     private boolean loading = false;
+    private boolean needMoreNouns = false;
 
     // delay thread
     private final Timer timer = new Timer(true);
@@ -84,6 +86,11 @@ public class WikiTool extends AbstractTool {
         setBackground(Color.white);
         setPreferredSize(SIZE);
         setMaximumSize(SIZE);
+        needMoreLabel.setText("This sentence needs more nouns \nto be evaluated correctly.");
+        needMoreLabel.setBackground(null);
+        needMoreLabel.setEditable(false);
+        needMoreLabel.setBorder(null);
+        needMoreLabel.setOpaque(false);
     }
 
     @Override
@@ -93,10 +100,11 @@ public class WikiTool extends AbstractTool {
             task = null;
         }
         final Set<Word> nouns = event.getSentence().find(Word.Type.NOUN);
-        showLoader();
 
         // only query wiki if there is more than 3 nouns
+
         if (nouns.size() > 2) {
+            showLoader();
             timer.schedule((task = new TimerTask() {
                 @Override
                 public void run() {
@@ -120,9 +128,16 @@ public class WikiTool extends AbstractTool {
                     } finally {
                         hideLoader();
                         task = null;
+                        needMoreNouns = false;
                     }
                 }
             }), 300);
+        } else if (!needMoreNouns) {
+            removeAll();
+            add(needMoreLabel);
+            revalidate();
+            repaint();
+            needMoreNouns = true;
         }
     }
 
