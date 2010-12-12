@@ -1,7 +1,6 @@
 package edu.gwu.raminfar.iauthor.ui;
 
 import edu.gwu.raminfar.iauthor.core.*;
-import edu.gwu.raminfar.iauthor.core.NlpService;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

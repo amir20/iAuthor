@@ -1,9 +1,9 @@
 package edu.gwu.raminfar.iauthor.wordtool;
 
 import edu.gwu.raminfar.animation.Animator;
+import edu.gwu.raminfar.iauthor.core.AbstractTool;
 import edu.gwu.raminfar.iauthor.core.TextEditorEvent;
 import edu.gwu.raminfar.iauthor.core.Word;
-import edu.gwu.raminfar.iauthor.core.AbstractTool;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
