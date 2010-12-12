@@ -47,12 +47,18 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
     private List<WordShape> shapes = new ArrayList<WordShape>();
 
     public WordTool() {
+        IndexSearcher temp;
         try {
-            searcher = new IndexSearcher(new NIOFSDirectory(new File(getClass().getResource("/lucene/wordnet/index").getFile())), true);
+            temp = new IndexSearcher(new NIOFSDirectory(new File(getClass().getResource("/lucene/wordnet/index").getFile())), true);
         } catch (IOException e) {
+            try {
+            temp = new IndexSearcher(new NIOFSDirectory(new File("./lucene/wordnet/index")), true);
+        } catch (IOException e2) {
             logger.log(Level.SEVERE, "Error while reading indexer data for wordnet", e);
             throw new RuntimeException(e);
         }
+        }
+        searcher = temp;
         setBackground(Color.white);
         addMouseListener(this);
         addMouseMotionListener(this);
