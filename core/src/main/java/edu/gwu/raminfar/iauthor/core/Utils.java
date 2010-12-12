@@ -1,7 +1,5 @@
 package edu.gwu.raminfar.iauthor.core;
 
-import edu.gwu.raminfar.iauthor.core.Word;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collection;
@@ -14,6 +12,7 @@ import java.util.logging.Logger;
  */
 public final class Utils {
     public static final Logger logger = Logger.getLogger(Utils.class.getName());
+
     private Utils() {
     }
 
