@@ -1,3 +1,4 @@
+#!/bin/bash
 rm -rf build
 mkdir -p build/lib
 mkdir -p build/tools
