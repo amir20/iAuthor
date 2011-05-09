@@ -27,6 +27,13 @@
             <groupId>edu.gwu.raminfar.iauthor</groupId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.apple</groupId>
+            <artifactId>AppleJavaExtensions</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/apple/AppleJavaExtensions.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>
