@@ -9,10 +9,10 @@
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl></supportUrl>
-  <customProcName>false</customProcName>
-  <stayAlive>false</stayAlive>
+  <customProcName>true</customProcName>
+  <stayAlive>true</stayAlive>
   <manifest></manifest>
-  <icon></icon>
+  <icon>/Users/amirraminfar/Workspace/iAuthor/application/src/main/resources/images/icon.ico</icon>
   <classPath>
     <mainClass>edu.gwu.raminfar.iauthor.Main</mainClass>
     <cp>.</cp>
