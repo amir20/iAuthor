@@ -1,7 +1,9 @@
 package edu.gwu.raminfar.iauthor;
 
+import java.io.IOException;
 import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -23,7 +25,14 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 ApplicationFrame.logger.info("Starting application frame...");
-                new ApplicationFrame();
+                ApplicationFrame frame = new ApplicationFrame();
+                if(!IS_MAC) {
+                    try {
+                        frame.setIconImage(ImageIO.read(getClass().getResource("/images/icon.ico")));
+                    } catch(IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
             }
         });
     }
