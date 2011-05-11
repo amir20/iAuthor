@@ -28,7 +28,7 @@ public class Main {
                 ApplicationFrame frame = new ApplicationFrame();
                 if(!IS_MAC) {
                     try {
-                        frame.setIconImage(ImageIO.read(getClass().getResource("/images/icon.ico")));
+                        frame.setIconImage(ImageIO.read(getClass().getResource("/images/icon.png")));
                     } catch(IOException e) {
                         throw new RuntimeException(e);
                     }
