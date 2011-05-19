@@ -7,6 +7,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -22,7 +23,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -65,11 +65,8 @@ public class WikiTool extends AbstractTool {
     public WikiTool() {
         try {
             Directory directory = new NIOFSDirectory(index);
-            try {
-                writer = new IndexWriter(directory, analyzer, false, IndexWriter.MaxFieldLength.UNLIMITED);
-            } catch (FileNotFoundException e) {
-                writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
-            }
+            IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_30, analyzer);
+            writer = new IndexWriter(directory, indexWriterConfig);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -135,7 +132,7 @@ public class WikiTool extends AbstractTool {
         List<Document> sentences = new ArrayList<Document>();
         IndexReader reader = null;
         try {
-            reader = writer.getReader();
+            reader = IndexReader.open(writer, true);
             IndexSearcher searcher = new IndexSearcher(reader);
             Query query = parser.parse(QueryParser.escape(Utils.join(sentence.find(Word.Type.NOUN), " ")));
             TopDocs docs = searcher.search(query, 15);
@@ -156,7 +153,7 @@ public class WikiTool extends AbstractTool {
     private void indexQuery(String keywords) throws IOException {
         IndexReader reader = null;
         try {
-            reader = writer.getReader();
+            reader = IndexReader.open(writer, true);
             logger.log(Level.INFO, "Querying wiki: \"{0}\"", keywords);
             Set<WikiPage> pages = new WikiSearch(keywords).parseResults(3 /* max docs */);
             IndexSearcher searcher = new IndexSearcher(reader);

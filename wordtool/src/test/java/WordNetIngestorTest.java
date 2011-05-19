@@ -4,6 +4,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -66,7 +67,8 @@ public class WordNetIngestorTest {
         Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
         File index = new File("./index");
         Directory directory = new NIOFSDirectory(index);
-        IndexWriter writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
+        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(Version.LUCENE_30, analyzer);
+        IndexWriter writer = new IndexWriter(directory, indexWriterConfig);
 
         for (Map.Entry<Word, List<Long>> entry : wordToId.entrySet()) {
             Word word = entry.getKey();
