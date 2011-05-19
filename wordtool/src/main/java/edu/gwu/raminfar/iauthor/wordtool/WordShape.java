@@ -27,6 +27,10 @@ public class WordShape {
         return wrapper;
     }
 
+    public Word getWord() {
+        return word;
+    }
+
     public void paint(Graphics g) {
         Graphics2D gd = (Graphics2D) g.create();
 

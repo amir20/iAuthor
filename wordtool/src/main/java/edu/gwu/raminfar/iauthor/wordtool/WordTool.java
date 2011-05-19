@@ -17,6 +17,7 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -52,11 +53,10 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
             temp = new IndexSearcher(new NIOFSDirectory(new File(getClass().getResource("/lucene/wordnet/index").getFile())), true);
         } catch (IOException e) {
             try {
-            temp = new IndexSearcher(new NIOFSDirectory(new File("./lucene/wordnet/index")), true);
-        } catch (IOException e2) {
-            logger.log(Level.SEVERE, "Error while reading indexer data for wordnet", e);
-            throw new RuntimeException(e);
-        }
+                temp = new IndexSearcher(new NIOFSDirectory(new File("./lucene/wordnet/index")), true);
+            } catch (IOException e2) {
+                throw new RuntimeException("Error while reading indexer data for wordnet", e2);
+            }
         }
         searcher = temp;
         setBackground(Color.white);
@@ -64,7 +64,87 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
         addMouseMotionListener(this);
     }
 
-    public List<Word> findSynonyms(Word word) {
+
+    @Override
+    public void onTextEvent(TextEditorEvent event) {
+        updateWord(event.getCurrentWord());
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D gd = (Graphics2D) g;
+        gd.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if (shapes.size() > 0) {
+            int wordX = (int) shapes.get(0).getWrapper().getShape().getBounds().getCenterX();
+            int wordY = (int) shapes.get(0).getWrapper().getShape().getBounds().getCenterY();
+
+            for (int i = 1, l = shapes.size(); i < l; i++) {
+                WordShape syn = shapes.get(i);
+                gd.drawLine(wordX, wordY, (int) syn.getWrapper().getShape().getBounds().getCenterX(), (int) syn.getWrapper().getShape().getBounds().getCenterY());
+            }
+
+        }
+        for (WordShape ws : shapes) {
+            ws.paint(g);
+        }
+    }
+
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        for (WordShape shape : shapes) {
+            if (shape.getWrapper().getShape().contains(e.getPoint())) {
+                updateWord(shape.getWord());
+                replaceWord(shape.getWord());
+                highlightCurrentWord();
+                return;
+            }
+        }
+    }
+
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        highlightCurrentWord();
+    }
+
+    private void replaceWord(Word word) {
+        highlightCurrentWord();
+        try {
+            int start = textPane.getSelectionStart();
+            textPane.getDocument().remove(start, textPane.getSelectionEnd() - start);
+            textPane.getDocument().insertString(start, word.getText(), null);
+        } catch (BadLocationException e) {
+            logger.log(Level.WARNING, "Error while trying to replace word", e);
+        } finally {
+            highlightCurrentWord();
+        }
+    }
+
+    private void highlightCurrentWord() {
+        String text = textPane.getText();
+        int start = text.lastIndexOf(" ", textPane.getCaret().getDot()) + 1;
+        int end = text.indexOf(" ", textPane.getCaret().getDot() + 1);
+        if (end == -1) {
+            end = text.length();
+        }
+        lastDot = textPane.getCaret().getDot();
+        textPane.getCaret().setSelectionVisible(false);
+        textPane.getCaret().setDot(start);
+        textPane.getCaret().moveDot(end);
+        textPane.getCaret().setSelectionVisible(true);
+    }
+
+    private List<Word> findSynonyms(Word word) {
         List<Word> synonyms = Collections.emptyList();
         try {
             String text = QueryParser.escape(word.getText());
@@ -100,16 +180,15 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
         return synonyms;
     }
 
-    @Override
-    public void onTextEvent(TextEditorEvent event) {
-        List<Word> synonyms = findSynonyms(event.getCurrentWord());
+    private void updateWord(Word word) {
+        List<Word> synonyms = findSynonyms(word);
         if (synonyms.size() > 0) {
             if (synonyms.size() > 10) {
                 synonyms = synonyms.subList(0, 10);
             }
             shapes.clear();
             FontMetrics fm = getFontMetrics(getFont());
-            WordShape shape = new WordShape(event.getCurrentWord(), fm, 100, 100, 0);
+            WordShape shape = new WordShape(word, fm, 100, 100, 0);
             Point center = new Point((int) (getBounds().getCenterX() - shape.getWrapper().getShape().getBounds().getWidth() / 2), (int) (getBounds().getCenterY() - shape.getWrapper().getShape().getBounds().getHeight() / 2));
             center.y -= 10;
             shapes.add(shape);
@@ -135,53 +214,6 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
         this.textPane = pane;
     }
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D gd = (Graphics2D) g;
-        gd.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        if (shapes.size() > 0) {
-            int wordX = (int) shapes.get(0).getWrapper().getShape().getBounds().getCenterX();
-            int wordY = (int) shapes.get(0).getWrapper().getShape().getBounds().getCenterY();
-
-            for (int i = 1, l = shapes.size(); i < l; i++) {
-                WordShape syn = shapes.get(i);
-                gd.drawLine(wordX, wordY, (int) syn.getWrapper().getShape().getBounds().getCenterX(), (int) syn.getWrapper().getShape().getBounds().getCenterY());
-            }
-
-        }
-        for (WordShape ws : shapes) {
-            ws.paint(g);
-        }
-    }
-
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        String text = textPane.getText();
-        int start = text.lastIndexOf(" ", textPane.getCaret().getDot()) + 1;
-        int end = text.indexOf(" ", textPane.getCaret().getDot() + 1);
-        if (end == -1) {
-            end = text.length();
-        }
-        lastDot = textPane.getCaret().getDot();
-        textPane.getCaret().setSelectionVisible(false);
-        textPane.getCaret().setDot(start);
-        textPane.getCaret().moveDot(end);
-        textPane.getCaret().setSelectionVisible(true);
-    }
 
     @Override
     public void mouseExited(MouseEvent e) {
