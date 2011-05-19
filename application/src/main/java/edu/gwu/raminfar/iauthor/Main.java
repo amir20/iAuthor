@@ -1,10 +1,10 @@
 package edu.gwu.raminfar.iauthor;
 
-import java.io.IOException;
 import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.io.IOException;
 
 /**
  * Author: Amir Raminfar
@@ -26,10 +26,10 @@ public class Main {
             public void run() {
                 ApplicationFrame.logger.info("Starting application frame...");
                 ApplicationFrame frame = new ApplicationFrame();
-                if(!IS_MAC) {
+                if (!IS_MAC) {
                     try {
                         frame.setIconImage(ImageIO.read(getClass().getResource("/images/icon.png")));
-                    } catch(IOException e) {
+                    } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 }

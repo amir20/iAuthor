@@ -35,7 +35,6 @@ public class ApplicationFrame extends JFrame {
         try {
             background = ImageIO.read(getClass().getResource("/images/background.png"));
         } catch (IOException e) {
-            ApplicationFrame.logger.log(Level.WARNING, "", e);
             throw new RuntimeException(e);
         }
         setContentPane(new JComponent() {
@@ -109,7 +108,6 @@ public class ApplicationFrame extends JFrame {
             }
             return list;
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

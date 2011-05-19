@@ -19,7 +19,7 @@ public final class Utils {
     public static String join(Collection<Word> objects, String delimiter) {
         StringBuilder sb = new StringBuilder();
         if (objects != null) {
-            for (Iterator<Word> iterator = objects.iterator(); iterator.hasNext();) {
+            for (Iterator<Word> iterator = objects.iterator(); iterator.hasNext(); ) {
                 Word w = iterator.next();
                 if (w != null) {
                     sb.append(w.getText());

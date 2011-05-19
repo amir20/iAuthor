@@ -44,7 +44,6 @@ public class TextEditorPane extends JComponent implements CaretListener {
         try {
             background = ImageIO.read(TextEditorPane.class.getResource("/images/papers.png"));
         } catch (IOException e) {
-            ApplicationFrame.logger.log(Level.WARNING, "", e);
             throw new RuntimeException(e);
         }
     }

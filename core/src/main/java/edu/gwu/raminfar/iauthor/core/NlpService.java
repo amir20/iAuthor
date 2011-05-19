@@ -27,7 +27,6 @@ public final class NlpService {
         try {
             posModel = new POSModel(NlpService.class.getResourceAsStream("/opennlp/models/en-pos-maxent.bin"));
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Could not open model for pos tagger", e);
             throw new RuntimeException(e);
         }
     }
@@ -38,7 +37,6 @@ public final class NlpService {
         try {
             sentenceModel = new SentenceModel(NlpService.class.getResourceAsStream("/opennlp/models/en-sent.bin"));
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Could not open model for sentence detector", e);
             throw new RuntimeException(e);
         }
     }

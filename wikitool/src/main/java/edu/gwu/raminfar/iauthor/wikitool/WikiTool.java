@@ -71,7 +71,6 @@ public class WikiTool extends AbstractTool {
                 writer = new IndexWriter(directory, analyzer, true, IndexWriter.MaxFieldLength.UNLIMITED);
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error reading SOLR data for wiki", e);
             throw new RuntimeException(e);
         }
         setBackground(Color.white);

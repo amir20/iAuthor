@@ -19,7 +19,7 @@ public class Animator {
     private Timer timer = new Timer(20, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (Iterator<Animation> iterator = queue.iterator(); iterator.hasNext();) {
+            for (Iterator<Animation> iterator = queue.iterator(); iterator.hasNext(); ) {
                 Animation animation = iterator.next();
                 if (animation.isEnded()) {
                     iterator.remove();
