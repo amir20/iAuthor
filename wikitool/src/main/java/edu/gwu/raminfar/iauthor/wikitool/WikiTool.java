@@ -2,7 +2,6 @@ package edu.gwu.raminfar.iauthor.wikitool;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
-import com.google.common.primitives.Chars;
 import edu.gwu.raminfar.iauthor.core.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -189,7 +188,7 @@ public class WikiTool extends AbstractTool {
                 }
             }
         } finally {
-         closeQuietly(reader);
+            closeQuietly(reader);
         }
     }
 

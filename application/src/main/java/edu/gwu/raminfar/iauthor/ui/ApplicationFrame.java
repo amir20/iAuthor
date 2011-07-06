@@ -65,7 +65,7 @@ public class ApplicationFrame extends JFrame {
         setupRightRail();
         setSize(new Dimension(1150, 700));
         setLocationRelativeTo(null);
-        
+
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 

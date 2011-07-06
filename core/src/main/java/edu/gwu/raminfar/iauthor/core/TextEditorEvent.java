@@ -25,7 +25,7 @@ public class TextEditorEvent {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof TextEditorEvent){
+        if (o instanceof TextEditorEvent) {
             TextEditorEvent other = (TextEditorEvent) o;
             return Objects.equal(sentence, other.sentence) && Objects.equal(currentWord, other.currentWord);
         }

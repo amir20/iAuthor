@@ -1,6 +1,5 @@
 package edu.gwu.raminfar.iauthor.ui;
 
-import com.google.common.base.Throwables;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.TypeLiteral;
