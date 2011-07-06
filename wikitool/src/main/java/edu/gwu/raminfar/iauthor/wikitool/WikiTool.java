@@ -1,5 +1,8 @@
 package edu.gwu.raminfar.iauthor.wikitool;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
+import com.google.common.primitives.Chars;
 import edu.gwu.raminfar.iauthor.core.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -30,9 +33,12 @@ import java.util.Timer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.google.common.io.Closeables.closeQuietly;
+
 /**
  * @author Amir Raminfar
  */
+@EnabledModules
 public class WikiTool extends AbstractTool {
     public static final Logger logger = Logger.getLogger(WikiTool.class.getName());
     // load background
@@ -86,7 +92,7 @@ public class WikiTool extends AbstractTool {
             task.cancel();
             task = null;
         }
-        final Set<Word> nouns = event.getSentence().find(Word.Type.NOUN);
+        final Set<Word> nouns = Sets.newHashSet(event.getSentence().find(Word.Type.NOUN));
 
         // only query edu.gwu.raminfar.iauthor.wiki if there is more than 3 nouns
 
@@ -96,7 +102,7 @@ public class WikiTool extends AbstractTool {
                 @Override
                 public void run() {
                     try {
-                        indexQuery(Utils.join(nouns, " "));
+                        indexQuery(Joiner.on(" ").join(nouns));
                         List<Document> docs = findSimilarSentences(event.getSentence());
                         JPanel list = new JPanel();
                         list.setOpaque(false);
@@ -134,7 +140,7 @@ public class WikiTool extends AbstractTool {
         try {
             reader = IndexReader.open(writer, true);
             IndexSearcher searcher = new IndexSearcher(reader);
-            Query query = parser.parse(QueryParser.escape(Utils.join(sentence.find(Word.Type.NOUN), " ")));
+            Query query = parser.parse(QueryParser.escape(Joiner.on(" ").join(sentence.find(Word.Type.NOUN))));
             TopDocs docs = searcher.search(query, 15);
             for (ScoreDoc doc : docs.scoreDocs) {
                 Document document = searcher.doc(doc.doc);
@@ -145,7 +151,7 @@ public class WikiTool extends AbstractTool {
         } catch (ParseException e) {
             logger.log(Level.WARNING, "Error parsing sentences", e);
         } finally {
-            Utils.close(reader);
+            closeQuietly(reader);
         }
         return sentences;
     }
@@ -183,14 +189,14 @@ public class WikiTool extends AbstractTool {
                 }
             }
         } finally {
-            Utils.close(reader);
+         closeQuietly(reader);
         }
     }
 
 
     @Override
     public void onClose() {
-        Utils.close(writer);
+        closeQuietly(writer);
     }
 
     @Override

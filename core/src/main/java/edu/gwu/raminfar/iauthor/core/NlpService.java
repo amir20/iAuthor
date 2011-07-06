@@ -10,16 +10,12 @@ import opennlp.tools.sentdetect.SentenceModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Author: Amir Raminfar
  * Date: Oct 3, 2010
  */
 public final class NlpService {
-    private static final Logger logger = Logger.getLogger(NlpService.class.getName());
-
     private NlpService() {
     }
 

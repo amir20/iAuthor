@@ -1,5 +1,7 @@
 package edu.gwu.raminfar.iauthor.core;
 
+import com.google.common.base.Objects;
+
 import java.util.regex.Pattern;
 
 /**
@@ -37,16 +39,16 @@ public class Word implements Comparable<Word> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Word word1 = (Word) o;
-        return !(type != word1.type || (word != null ? !word.equals(word1.word) : word1.word != null));
+        if (o instanceof Word) {
+            Word other = (Word) o;
+            return Objects.equal(word, other.word) && Objects.equal(type, other.type);
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        int result = word != null ? word.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
+        return Objects.hashCode(word, type);
     }
 
     @Override

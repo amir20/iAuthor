@@ -1,33 +1,36 @@
 package edu.gwu.raminfar.animation;
 
+import com.google.common.base.Predicate;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import static com.google.common.collect.Iterables.removeIf;
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * @author Amir Raminfar
  */
 public class Animator {
     private final JComponent component;
-    private final List<Animation> queue = new ArrayList<Animation>();
+    private final List<Animation> queue = newArrayList();
 
     private Timer timer = new Timer(20, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (Iterator<Animation> iterator = queue.iterator(); iterator.hasNext(); ) {
-                Animation animation = iterator.next();
-                if (animation.isEnded()) {
-                    iterator.remove();
-                } else {
-                    transform(animation);
+            removeIf(queue, new Predicate<Animation>() {
+                @Override
+                public boolean apply(Animation animation) {
+                    return animation.isEnded();
                 }
+            });
+            for (Animation animation : queue) {
+                transform(animation);
             }
-
             if (queue.isEmpty()) {
                 timer.stop();
             }

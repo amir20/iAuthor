@@ -1,5 +1,7 @@
 package edu.gwu.raminfar.iauthor.core;
 
+import com.google.common.base.Objects;
+
 /**
  * @author Amir Raminfar
  */
@@ -23,19 +25,15 @@ public class TextEditorEvent {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TextEditorEvent that = (TextEditorEvent) o;
-
-        return !((currentWord != null ? !currentWord.equals(that.currentWord) : that.currentWord != null) ||
-                (sentence != null ? !sentence.equals(that.sentence) : that.sentence != null));
-
+        if (o instanceof TextEditorEvent){
+            TextEditorEvent other = (TextEditorEvent) o;
+            return Objects.equal(sentence, other.sentence) && Objects.equal(currentWord, other.currentWord);
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        int result = sentence != null ? sentence.hashCode() : 0;
-        result = 31 * result + (currentWord != null ? currentWord.hashCode() : 0);
-        return result;
+        return Objects.hashCode(sentence, currentWord);
     }
 }

@@ -2,6 +2,7 @@ package edu.gwu.raminfar.iauthor.wordtool;
 
 import edu.gwu.raminfar.animation.Animator;
 import edu.gwu.raminfar.iauthor.core.AbstractTool;
+import edu.gwu.raminfar.iauthor.core.EnabledModules;
 import edu.gwu.raminfar.iauthor.core.TextEditorEvent;
 import edu.gwu.raminfar.iauthor.core.Word;
 import org.apache.lucene.analysis.Analyzer;
@@ -35,6 +36,7 @@ import java.util.regex.Pattern;
 /**
  * @author Amir Raminfar
  */
+@EnabledModules
 public class WordTool extends AbstractTool implements MouseListener, MouseMotionListener {
     public static final Logger logger = Logger.getLogger(WordTool.class.getName());
     private final IndexSearcher searcher;

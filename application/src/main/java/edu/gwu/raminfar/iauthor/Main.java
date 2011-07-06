@@ -1,6 +1,9 @@
 package edu.gwu.raminfar.iauthor;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import edu.gwu.raminfar.iauthor.ui.ApplicationFrame;
+import edu.gwu.raminfar.iauthor.ui.iAuthorModule;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,8 +27,10 @@ public class Main {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+                Injector injector = Guice.createInjector(new iAuthorModule());
                 ApplicationFrame.logger.info("Starting application frame...");
-                ApplicationFrame frame = new ApplicationFrame();
+                ApplicationFrame frame = injector.getInstance(ApplicationFrame.class);
+                frame.setVisible(true);
                 if (!IS_MAC) {
                     try {
                         frame.setIconImage(ImageIO.read(getClass().getResource("/images/icon.png")));

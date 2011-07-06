@@ -1,6 +1,13 @@
 package edu.gwu.raminfar.iauthor.core;
 
-import java.util.*;
+import com.google.common.base.Objects;
+import com.google.common.base.Predicate;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.google.common.collect.Iterables.filter;
 
 /**
  * @author Amir Raminfar
@@ -21,33 +28,35 @@ public class Sentence implements Iterable<Word> {
         return rawText;
     }
 
-    public Set<Word> find(Word.Type type) {
-        Set<Word> found = new LinkedHashSet<Word>();
-        for (Word word : getWords()) {
-            if (word.getType() == type) {
-                found.add(word);
+    public Iterable<Word> find(final Word.Type type) {
+        return filter(getWords(), new Predicate<Word>() {
+            @Override
+            public boolean apply(Word word) {
+                return word.getType() == type;
             }
-        }
-
-        return found;
+        });
     }
 
     @Override
     public String toString() {
-        return Utils.join(getWords(), " ");
+        return Objects.toStringHelper(this)
+                .add("Sentence", rawText)
+                .toString();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Sentence sentence = (Sentence) o;
-        return !(rawText != null ? !rawText.equals(sentence.rawText) : sentence.rawText != null);
+        if (o instanceof Sentence) {
+            Sentence other = (Sentence) o;
+            return Objects.equal(rawText, other.rawText);
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return rawText != null ? rawText.hashCode() : 0;
+        return Objects.hashCode(rawText);
     }
 
     @Override
