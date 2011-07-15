@@ -99,7 +99,6 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
             if (shape.getWrapper().getShape().contains(e.getPoint())) {
                 updateWord(shape.getWord());
                 replaceWord(shape.getWord());
-                highlightCurrentWord();
                 return;
             }
         }
@@ -134,16 +133,19 @@ public class WordTool extends AbstractTool implements MouseListener, MouseMotion
 
     private void highlightCurrentWord() {
         String text = textPane.getText();
-        int start = text.lastIndexOf(" ", textPane.getCaret().getDot()) + 1;
-        int end = text.indexOf(" ", textPane.getCaret().getDot() + 1);
+        int start = text.lastIndexOf(" ", textPane.getCaret().getDot());
+        int end = text.indexOf(" ", textPane.getCaret().getDot());
         if (end == -1) {
             end = text.length();
         }
+        if (start == end) {
+            start = text.lastIndexOf(" ", textPane.getCaret().getDot() - 1) + 1;
+        } else {
+            ++start;
+        }
         lastDot = textPane.getCaret().getDot();
-        textPane.getCaret().setSelectionVisible(false);
-        textPane.getCaret().setDot(start);
-        textPane.getCaret().moveDot(end);
-        textPane.getCaret().setSelectionVisible(true);
+        textPane.setSelectionStart(start);
+        textPane.setSelectionEnd(end);
     }
 
     private List<Word> findSynonyms(Word word) {
