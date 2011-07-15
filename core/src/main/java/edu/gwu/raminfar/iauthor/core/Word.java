@@ -25,7 +25,7 @@ public class Word implements Comparable<Word> {
 
     @Override
     public String toString() {
-        return String.format("%s/%s", word, type);
+        return word;
     }
 
     public Type getType() {

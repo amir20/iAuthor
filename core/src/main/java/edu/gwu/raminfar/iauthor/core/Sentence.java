@@ -3,10 +3,10 @@ package edu.gwu.raminfar.iauthor.core;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.google.common.collect.ImmutableList.copyOf;
 import static com.google.common.collect.Iterables.filter;
 
 /**
@@ -21,7 +21,7 @@ public class Sentence implements Iterable<Word> {
     }
 
     public List<Word> getWords() {
-        return words != null ? words : (words = Collections.unmodifiableList(NlpService.tagSentence(rawText)));
+        return words != null ? words : (words = copyOf(NlpService.tagSentence(rawText)));
     }
 
     public String getRawText() {

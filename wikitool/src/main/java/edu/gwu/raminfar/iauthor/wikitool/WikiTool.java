@@ -1,7 +1,6 @@
 package edu.gwu.raminfar.iauthor.wikitool;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Sets;
 import edu.gwu.raminfar.iauthor.core.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -26,13 +25,17 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Sets.newHashSet;
 import static com.google.common.io.Closeables.closeQuietly;
+import static org.apache.lucene.queryParser.QueryParser.escape;
 
 /**
  * @author Amir Raminfar
@@ -67,6 +70,8 @@ public class WikiTool extends AbstractTool {
     private final Timer timer = new Timer(true);
     private TimerTask task = null;
 
+    private Sentence lastSentence;
+
     public WikiTool() {
         try {
             Directory directory = new NIOFSDirectory(index);
@@ -87,54 +92,57 @@ public class WikiTool extends AbstractTool {
 
     @Override
     public void onTextEvent(final TextEditorEvent event) {
-        if (task != null) {
-            task.cancel();
-            task = null;
-        }
-        final Set<Word> nouns = Sets.newHashSet(event.getSentence().find(Word.Type.NOUN));
+        if (!event.getSentence().equals(lastSentence)) {
+            if (task != null) {
+                task.cancel();
+                task = null;
+            }
+            final Set<Word> nouns = newHashSet(event.getSentence().find(Word.Type.NOUN));
 
-        // only query edu.gwu.raminfar.iauthor.wiki if there is more than 3 nouns
+            // only query edu.gwu.raminfar.iauthor.wiki if there is more than 3 nouns
 
-        if (nouns.size() > 2) {
-            showLoader();
-            timer.schedule((task = new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        indexQuery(Joiner.on(" ").join(nouns));
-                        List<Document> docs = findSimilarSentences(event.getSentence());
-                        JPanel list = new JPanel();
-                        list.setOpaque(false);
-                        list.setLayout(new BoxLayout(list, BoxLayout.PAGE_AXIS));
-                        list.setPreferredSize(getSize());
-                        for (Document doc : docs) {
-                            JLabel f = new JLabel(doc.get("originalSentence"));
-                            f.setToolTipText(doc.get("originalSentence") + " from [" + doc.get("url") + "]");
-                            list.add(f);
+            if (nouns.size() > 2) {
+                showLoader();
+                timer.schedule((task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            indexQuery(Joiner.on(" ").join(nouns));
+                            List<Document> docs = findSimilarSentences(event.getSentence());
+                            JPanel list = new JPanel();
+                            list.setOpaque(false);
+                            list.setLayout(new BoxLayout(list, BoxLayout.PAGE_AXIS));
+                            list.setPreferredSize(getSize());
+                            for (Document doc : docs) {
+                                JLabel f = new JLabel(doc.get("originalSentence"));
+                                f.setToolTipText(doc.get("originalSentence") + " from [" + doc.get("url") + "]");
+                                list.add(f);
+                            }
+                            add(list);
+                        } catch (IOException e) {
+                            logger.log(Level.WARNING, "Error parsing sentences", e);
+                        } catch (Exception e) {
+                            logger.log(Level.WARNING, "Unknown exception", e);
+                        } finally {
+                            hideLoader();
+                            task = null;
+                            needMoreNouns = false;
                         }
-                        add(list);
-                    } catch (IOException e) {
-                        logger.log(Level.WARNING, "Error parsing sentences", e);
-                    } catch (Exception e) {
-                        logger.log(Level.WARNING, "Unknown exception", e);
-                    } finally {
-                        hideLoader();
-                        task = null;
-                        needMoreNouns = false;
                     }
-                }
-            }), 300);
-        } else if (!needMoreNouns) {
-            removeAll();
-            add(needMoreLabel);
-            revalidate();
-            repaint();
-            needMoreNouns = true;
+                }), 300);
+            } else if (!needMoreNouns) {
+                removeAll();
+                add(needMoreLabel);
+                revalidate();
+                repaint();
+                needMoreNouns = true;
+            }
+            lastSentence = event.getSentence();
         }
     }
 
     private List<Document> findSimilarSentences(Sentence sentence) {
-        List<Document> sentences = new ArrayList<Document>();
+        List<Document> sentences = newArrayList();
         IndexReader reader = null;
         try {
             reader = IndexReader.open(writer, true);
@@ -165,7 +173,7 @@ public class WikiTool extends AbstractTool {
 
             for (WikiPage page : pages) {
                 try {
-                    Query query = parser.parse("url:" + QueryParser.escape(page.getUrl()));
+                    Query query = parser.parse("url:" + escape(page.getUrl()));
                     // make sure it hasn't already been parsed
                     if (searcher.search(query, 1).totalHits == 0) {
                         logger.log(Level.INFO, "Indexing \"{0}\"", page.getUrl());
